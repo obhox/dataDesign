@@ -16,7 +16,7 @@ import { PartEditor } from "./part-editor"
 import { AIChat } from "./ai-chat"
 import { AISuggestionsPanel } from "./ai-suggestions-panel"
 
-export default function ManufacturingMindMap() {
+export default function PrototypingMindMap() {
   const [parts, setParts] = useState<Part[]>([])
   const [connections, setConnections] = useState<Connection[]>([])
   const [selectedPart, setSelectedPart] = useState<Part | null>(null)

@@ -1,11 +1,11 @@
 # Flow by Obhox Systems
 
-An interactive manufacturing component visualization and BOM (Bill of Materials) management tool built with Next.js and React Flow.
+An interactive prototyping component visualization and BOM (Bill of Materials) management tool built with Next.js and React Flow.
 
 ## 🚀 Features
 
-- **Interactive Mind Map**: Visual representation of manufacturing components and their relationships
-- **Component Library**: Comprehensive library of manufacturing components categorized by type (mechanical, electrical, control, hydraulic)
+- **Interactive Mind Map**: Visual representation of prototyping components and their relationships
+- **Component Library**: Comprehensive library of prototyping components categorized by type (mechanical, electrical, control, hydraulic)
 - **BOM Management**: Track costs, quantities, and specifications for each component
 - **Real-time Editing**: Add, edit, and delete components with live updates
 - **Connection Management**: Define relationships between components with different link types
@@ -105,7 +105,7 @@ Flow/
 │   ├── ui/               # Reusable UI components
 │   ├── canvas.tsx        # Main flow canvas
 │   ├── component-library.tsx
-│   ├── manufacturing-mind-map.tsx
+│   ├── prototyping-mind-map.tsx
 │   ├── part-editor.tsx
 │   └── toolbar.tsx
 ├── lib/                  # Utilities and constants
@@ -163,4 +163,4 @@ For support, please open an issue on GitHub or contact the development team.
 
 ---
 
-**Flow by Obhox Systems** - Streamlining manufacturing visualization and BOM management.
+**Flow by Obhox Systems** - Streamlining prototyping visualization and BOM management.

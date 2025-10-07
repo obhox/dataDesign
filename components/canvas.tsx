@@ -22,6 +22,7 @@ import "@xyflow/react/dist/style.css"
 import type { Part, Connection, Component } from "@/lib/types"
 import { CustomNode } from "./custom-node"
 import { CustomEdge } from "./custom-edge"
+import { SimpleChatBar } from "./simple-chat-bar"
 
 interface CanvasProps {
   parts: Part[]
@@ -204,44 +205,47 @@ export function Canvas({
   }, [])
 
   return (
-    <div className="w-full h-full" onDrop={onDrop} onDragOver={onDragOver}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeClick={onNodeClick}
-        onEdgeClick={onEdgeClick}
-        onPaneClick={onPaneClick}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        fitView
-        minZoom={0.3}
-        maxZoom={3}
-        defaultEdgeOptions={{
-          type: "custom",
-        }}
-        connectionLineType={ConnectionLineType.Bezier}
-        connectionLineStyle={{
-          stroke: selectedLinkType.color,
-          strokeWidth: selectedLinkType.strokeWidth || 2,
-          strokeDasharray: selectedLinkType.dashArray,
-        }}
-      >
-        <Background />
-        <Controls />
-        <MiniMap nodeColor={(node) => (node.data as any).customColor || "#e0e7ff"} />
-      </ReactFlow>
-      {parts.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="text-center text-gray-400">
-            <div className="text-6xl mb-4">🏭</div>
-            <div className="text-xl mb-2">Drag components from the right panel</div>
-            <div className="text-sm">or click &quot;Load Sample&quot;</div>
+    <div className="w-full h-full relative">
+      <div className="w-full h-full" onDrop={onDrop} onDragOver={onDragOver}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={handleNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeClick={onNodeClick}
+          onEdgeClick={onEdgeClick}
+          onPaneClick={onPaneClick}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          fitView
+          minZoom={0.3}
+          maxZoom={3}
+          defaultEdgeOptions={{
+            type: "custom",
+          }}
+          connectionLineType={ConnectionLineType.Bezier}
+          connectionLineStyle={{
+            stroke: selectedLinkType.color,
+            strokeWidth: selectedLinkType.strokeWidth || 2,
+            strokeDasharray: selectedLinkType.dashArray,
+          }}
+        >
+          <Background />
+          <Controls />
+          <MiniMap nodeColor={(node) => (node.data as any).customColor || "#e0e7ff"} />
+        </ReactFlow>
+        {parts.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-center text-gray-400">
+              <div className="text-6xl mb-4">🏭</div>
+              <div className="text-xl mb-2">Drag components from the right panel</div>
+              <div className="text-sm">or click &quot;Load Sample&quot;</div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      <SimpleChatBar onSendMessage={(message) => console.log('AI Message:', message)} />
     </div>
   )
 }

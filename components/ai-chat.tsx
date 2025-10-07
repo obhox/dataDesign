@@ -36,7 +36,7 @@ export function AIChat({ parts, connections, onSuggestionApply }: AIChatProps) {
     {
       id: '1',
       type: 'ai',
-      content: 'Hello! I\'m your AI manufacturing assistant. I can help you analyze your workflow, suggest improvements, recommend parts, and troubleshoot issues. How can I assist you today?',
+      content: 'Hello! I\'m your AI prototyping assistant. I can help you analyze your workflow, suggest improvements, recommend parts, and troubleshoot issues. How can I assist you today?',
       timestamp: new Date(),
       category: 'general'
     }
@@ -114,16 +114,16 @@ export function AIChat({ parts, connections, onSuggestionApply }: AIChatProps) {
     let message = ''
     switch (action.id) {
       case 'analyze':
-        message = 'Please analyze my current manufacturing workflow and provide efficiency insights.'
+        message = 'Please analyze my current prototyping workflow and provide efficiency insights.'
         break
       case 'suggest':
-        message = 'Can you suggest additional parts that would complement my current manufacturing system?'
+        message = 'Can you suggest additional parts that would complement my current prototyping system?'
         break
       case 'optimize':
-        message = 'How can I optimize my manufacturing process for better efficiency?'
+        message = 'How can I optimize my prototyping process for better efficiency?'
         break
       case 'troubleshoot':
-        message = 'I\'m experiencing issues with my manufacturing process. Can you help troubleshoot?'
+        message = 'I\'m experiencing issues with my prototyping process. Can you help troubleshoot?'
         break
     }
     sendMessage(message, action.category)
@@ -152,7 +152,7 @@ export function AIChat({ parts, connections, onSuggestionApply }: AIChatProps) {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
           <Bot className="h-5 w-5" />
-          AI Manufacturing Assistant
+          AI Prototyping Assistant
         </CardTitle>
       </CardHeader>
       
@@ -252,7 +252,7 @@ export function AIChat({ parts, connections, onSuggestionApply }: AIChatProps) {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about manufacturing processes, parts, or optimizations..."
+            placeholder="Ask about prototyping processes, parts, or optimizations..."
             onKeyPress={(e) => e.key === 'Enter' && sendMessage(input)}
             disabled={isLoading}
             className="flex-1"

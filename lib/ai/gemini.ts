@@ -8,23 +8,23 @@ export class GeminiAIService {
   private model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   /**
-   * Generate manufacturing process suggestions based on parts and connections
+   * Generate prototyping process suggestions based on parts and connections
    */
   async generateProcessSuggestions(parts: Part[], connections: Connection[]): Promise<string> {
     const prompt = `
-      As a manufacturing expert, analyze the following manufacturing system:
+      As a prototyping expert, analyze the following prototyping system:
       
       Parts: ${JSON.stringify(parts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality })), null, 2)}
       
       Connections: ${JSON.stringify(connections.map(c => ({ from: c.from, to: c.to, linkType: c.linkType })), null, 2)}
       
       Please provide:
-      1. Process optimization suggestions
-      2. Potential bottlenecks or issues
-      3. Recommended improvements
-      4. Quality control checkpoints
+      1. Prototype optimization suggestions
+      2. Potential design issues or bottlenecks
+      3. Recommended improvements for rapid iteration
+      4. Testing and validation checkpoints
       
-      Keep the response concise and actionable.
+      Keep the response concise and actionable for prototyping workflows.
     `;
 
     try {
@@ -42,18 +42,18 @@ export class GeminiAIService {
    */
   async generatePartRecommendations(existingParts: Part[], context?: string): Promise<string> {
     const prompt = `
-      Based on the following existing manufacturing parts:
+      Based on the following existing prototyping parts:
       ${JSON.stringify(existingParts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality })), null, 2)}
       
       ${context ? `Additional context: ${context}` : ''}
       
-      Suggest additional parts that would complement this manufacturing system. Include:
+      Suggest additional parts that would complement this prototyping system. Include:
       1. Part name and type
       2. How it integrates with existing parts
-      3. Benefits it would provide
+      3. Benefits it would provide for rapid prototyping
       4. Estimated cost impact (low/medium/high)
       
-      Focus on practical, commonly used manufacturing components.
+      Focus on practical, commonly used prototyping components and rapid iteration tools.
     `;
 
     try {
@@ -67,24 +67,24 @@ export class GeminiAIService {
   }
 
   /**
-   * Analyze manufacturing workflow efficiency
+   * Analyze prototyping workflow efficiency
    */
   async analyzeWorkflowEfficiency(parts: Part[], connections: Connection[]): Promise<string> {
     const prompt = `
-      Analyze the efficiency of this manufacturing workflow:
+      Analyze the efficiency of this prototyping workflow:
       
       Parts: ${JSON.stringify(parts.map(p => ({ name: p.name, type: p.type, x: p.x, y: p.y })), null, 2)}
       
       Connections: ${JSON.stringify(connections, null, 2)}
       
       Provide analysis on:
-      1. Workflow efficiency score (1-10)
-      2. Material flow optimization
-      3. Potential automation opportunities
+      1. Prototyping efficiency score (1-10)
+      2. Design flow optimization
+      3. Potential rapid iteration opportunities
       4. Resource utilization improvements
-      5. Lean manufacturing principles application
+      5. Lean prototyping principles application
       
-      Be specific and provide actionable insights.
+      Be specific and provide actionable insights for faster prototyping cycles.
     `;
 
     try {
@@ -98,21 +98,21 @@ export class GeminiAIService {
   }
 
   /**
-   * Generate troubleshooting suggestions for manufacturing issues
+   * Generate troubleshooting suggestions for prototyping issues
    */
   async generateTroubleshootingSuggestions(issue: string, relevantParts: Part[]): Promise<string> {
     const prompt = `
-      Manufacturing Issue: ${issue}
+      Prototyping Issue: ${issue}
       
       Relevant Parts: ${JSON.stringify(relevantParts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality })), null, 2)}
       
       Provide troubleshooting suggestions including:
-      1. Possible root causes
+      1. Possible root causes in the prototype design
       2. Step-by-step diagnostic procedures
-      3. Preventive measures
-      4. When to escalate to specialists
+      3. Quick fixes and workarounds for rapid iteration
+      4. When to redesign vs. patch the prototype
       
-      Focus on practical, safety-first approaches.
+      Focus on practical, fast solutions that maintain prototyping velocity.
     `;
 
     try {
@@ -126,9 +126,9 @@ export class GeminiAIService {
   }
 
   /**
-   * Generate general manufacturing advice
+   * Generate general prototyping advice
    */
-  async generateManufacturingAdvice(query: string, context?: { parts: Part[], connections: Connection[] }): Promise<string> {
+  async generatePrototypingAdvice(query: string, context?: { parts: Part[], connections: Connection[] }): Promise<string> {
     const contextInfo = context ? `
       Current System Context:
       Parts: ${JSON.stringify(context.parts.map(p => ({ name: p.name, type: p.type })), null, 2)}
@@ -136,12 +136,12 @@ export class GeminiAIService {
     ` : '';
 
     const prompt = `
-      Manufacturing Query: ${query}
+      Prototyping Query: ${query}
       
       ${contextInfo}
       
-      As a manufacturing expert, provide helpful, accurate, and practical advice. 
-      Focus on industry best practices, safety considerations, and cost-effective solutions.
+      As a prototyping expert, provide helpful, accurate, and practical advice. 
+      Focus on rapid iteration best practices, design thinking principles, and cost-effective prototyping solutions.
     `;
 
     try {
@@ -149,8 +149,8 @@ export class GeminiAIService {
       const response = await result.response;
       return response.text();
     } catch (error) {
-      console.error('Error generating manufacturing advice:', error);
-      throw new Error('Failed to generate manufacturing advice');
+      console.error('Error generating prototyping advice:', error);
+      throw new Error('Failed to generate prototyping advice');
     }
   }
 }

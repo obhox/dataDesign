@@ -1,5 +1,5 @@
-import ManufacturingMindMap from "@/components/manufacturing-mind-map"
+import PrototypingMindMap from "@/components/prototyping-mind-map"
 
 export default function Home() {
-  return <ManufacturingMindMap />
+  return <PrototypingMindMap />
 }

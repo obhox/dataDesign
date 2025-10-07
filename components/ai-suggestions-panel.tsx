@@ -254,7 +254,7 @@ export function AISuggestionsPanel({
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500">
-            Add some parts to your manufacturing system to get AI-powered suggestions.
+            Add some parts to your prototyping system to get AI-powered suggestions.
           </p>
         </CardContent>
       </Card>

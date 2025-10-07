@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        response = await geminiAI.generateManufacturingAdvice(message, {
+        response = await geminiAI.generatePrototypingAdvice(message, {
           parts: parts || [],
           connections: connections || []
         })

@@ -11,7 +11,7 @@ export function exportAsJSON(
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = "manufacturing-mindmap.json"
+  a.download = "prototyping-mindmap.json"
   a.click()
   URL.revokeObjectURL(url)
 }
