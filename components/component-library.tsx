@@ -32,13 +32,13 @@ export function ComponentLibrary({
   onSetNewComponent,
 }: ComponentLibraryProps) {
   return (
-    <div className="p-4">
+    <div className="">
       <h2 className="text-lg font-bold text-gray-800 mb-4">Components</h2>
       {Object.entries(COMPONENT_CATEGORIES).map(([categoryId, category]) => {
         const CategoryIcon = category.icon
         const isExpanded = expandedCategories[categoryId]
         return (
-          <div key={categoryId} className="mb-4">
+          <div key={categoryId} className="mb-6">
             <button
               onClick={() => onToggleCategory(categoryId)}
               className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
@@ -50,7 +50,7 @@ export function ComponentLibrary({
               {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
             </button>
             {isExpanded && (
-              <div className="mt-2 space-y-2 ml-2">
+              <div className="mt-3 space-y-2 ml-2">
                 {category.components.map((component) => {
                   const Icon = component.icon
                   return (
@@ -72,7 +72,7 @@ export function ComponentLibrary({
         )
       })}
 
-      <div className="mb-4 border-t-2 border-gray-300 pt-4">
+      <div className="mb-6 border-t-2 border-gray-300 pt-4">
         <button
           onClick={() => onToggleCategory("custom")}
           className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
@@ -84,7 +84,7 @@ export function ComponentLibrary({
           {expandedCategories.custom ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
         </button>
         {expandedCategories.custom && (
-          <div className="mt-2 space-y-2 ml-2">
+          <div className="mt-3 space-y-2 ml-2">
             {customComponents.map((component) => {
               const Icon = component.icon
               return (
@@ -158,18 +158,7 @@ export function ComponentLibrary({
         )}
       </div>
 
-      <div className="border-t border-gray-200 pt-4">
-        <h3 className="text-sm font-semibold text-gray-600 mb-3">Instructions</h3>
-        <ul className="text-xs text-gray-600 space-y-2">
-          <li>• Click categories to expand/collapse</li>
-          <li>• Drag components to canvas</li>
-          <li>• Create custom parts in Custom Parts section</li>
-          <li>• Drag parts to reposition</li>
-          <li>• Drag blue dot to connect</li>
-          <li>• Click parts to edit details</li>
-          <li>• Ctrl+Z/Y for undo/redo</li>
-        </ul>
-      </div>
+
     </div>
   )
 }

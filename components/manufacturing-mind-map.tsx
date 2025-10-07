@@ -22,6 +22,9 @@ export default function ManufacturingMindMap() {
   const [selectedLinkType, setSelectedLinkType] = useState<LinkType>(LINK_TYPES[0])
   const [customLinkTypes, setCustomLinkTypes] = useState<LinkType[]>([])
   const [showAddLinkType, setShowAddLinkType] = useState(false)
+  const [visibleLinkTypes, setVisibleLinkTypes] = useState<Set<string>>(
+    new Set([...LINK_TYPES.map(lt => lt.id)])
+  )
   const [searchingImage, setSearchingImage] = useState(false)
   const [imageResults, setImageResults] = useState<string[]>([])
   const [showImageResults, setShowImageResults] = useState(false)
@@ -37,9 +40,10 @@ export default function ManufacturingMindMap() {
   const [customComponents, setCustomComponents] = useState<Component[]>([])
   const [showAddComponent, setShowAddComponent] = useState(false)
   const [newComponent, setNewComponent] = useState({ name: "", color: "#f3f4f6" })
+  const [arrangementMode, setArrangementMode] = useState<'hierarchical' | 'spatial' | 'grid'>('hierarchical')
 
   const toggleCategory = (categoryId: string) => {
-    setExpandedCategories((prev) => ({ ...prev, [categoryId]: !prev[categoryId] }))
+    setExpandedCategories((prev) => ({ ...prev, [categoryId]: !prev[categoryId as keyof typeof prev] }))
   }
 
   const addCustomComponent = () => {
@@ -185,6 +189,106 @@ export default function ManufacturingMindMap() {
     }
   }
 
+  const toggleLinkTypeVisibility = (linkTypeId: string) => {
+    const newVisibleLinkTypes = new Set(visibleLinkTypes)
+    if (newVisibleLinkTypes.has(linkTypeId)) {
+      newVisibleLinkTypes.delete(linkTypeId)
+    } else {
+      newVisibleLinkTypes.add(linkTypeId)
+    }
+    setVisibleLinkTypes(newVisibleLinkTypes)
+  }
+
+  const autoArrangeParts = () => {
+    if (parts.length === 0) return
+
+    let newParts: Part[]
+
+    if (arrangementMode === 'hierarchical') {
+      // Hierarchical arrangement - optimized for connection visualization
+      const connectionCounts = new Map<string, number>()
+      
+      // Count connections for each part
+      parts.forEach(part => {
+        const count = connections.filter(conn => 
+          conn.from === part.id || conn.to === part.id
+        ).length
+        connectionCounts.set(part.id.toString(), count)
+      })
+      
+      // Sort parts by connection count (most connected first)
+      const sortedParts = [...parts].sort((a, b) => 
+        (connectionCounts.get(b.id.toString()) || 0) - (connectionCounts.get(a.id.toString()) || 0)
+      )
+      
+      // Create hierarchical layout
+      const levels = Math.ceil(Math.sqrt(parts.length))
+      const levelHeight = 250
+      const startY = 100
+      const centerX = 400
+      
+      newParts = sortedParts.map((part, index) => {
+        const level = Math.floor(index / levels)
+        const positionInLevel = index % levels
+        const levelWidth = Math.min(levels, sortedParts.length - level * levels)
+        const spacing = Math.max(200, 800 / levelWidth)
+        const startX = centerX - (levelWidth - 1) * spacing / 2
+        
+        return {
+          ...part,
+          x: startX + positionInLevel * spacing,
+          y: startY + level * levelHeight,
+        }
+      })
+      
+      // Switch to spatial mode for next click
+      setArrangementMode('spatial')
+    } else if (arrangementMode === 'spatial') {
+      // Spatial/circular arrangement
+      const centerX = 400
+      const centerY = 300
+      const radius = Math.max(150, parts.length * 20) // Dynamic radius based on part count
+      
+      newParts = parts.map((part, index) => {
+        const angle = (index / parts.length) * 2 * Math.PI
+        const x = centerX + radius * Math.cos(angle)
+        const y = centerY + radius * Math.sin(angle)
+        
+        return {
+          ...part,
+          x,
+          y,
+        }
+      })
+      
+      // Switch to grid mode for next click
+      setArrangementMode('grid')
+    } else {
+      // Grid arrangement
+      const gridSize = Math.ceil(Math.sqrt(parts.length))
+      const spacing = 200
+      const startX = 100
+      const startY = 100
+
+      newParts = parts.map((part, index) => {
+        const row = Math.floor(index / gridSize)
+        const col = index % gridSize
+        
+        return {
+          ...part,
+          x: startX + col * spacing,
+          y: startY + row * spacing,
+        }
+      })
+      
+      // Switch to hierarchical mode for next click
+      setArrangementMode('hierarchical')
+    }
+
+    setParts(newParts)
+    saveToHistory(newParts, connections)
+  }
+
   return (
     <ReactFlowProvider>
       <div className="w-full h-screen bg-white relative overflow-hidden">
@@ -197,12 +301,13 @@ export default function ManufacturingMindMap() {
           onExportJSON={() => exportAsJSON(parts, connections, customLinkTypes, customComponents)}
           onImportJSON={importFromJSON}
           onExportBOM={() => exportBOM(parts)}
+          onAutoArrange={autoArrangeParts}
           parts={parts}
         />
 
         <Canvas
           parts={parts}
-          connections={connections}
+          connections={connections.filter(conn => visibleLinkTypes.has(conn.linkType))}
           selectedPart={selectedPart}
           selectedConnection={selectedConnection}
           selectedLinkType={selectedLinkType}
@@ -214,7 +319,7 @@ export default function ManufacturingMindMap() {
           onCanvasDrop={() => {}}
         />
 
-        <div className="absolute top-0 right-0 w-64 h-full bg-white border-l border-gray-200 shadow-2xl overflow-y-auto z-10">
+        <div className="absolute top-0 right-0 w-64 h-full bg-white border-l border-gray-200 shadow-2xl overflow-y-auto z-10 p-4">
           <ComponentLibrary
             expandedCategories={expandedCategories}
             customComponents={customComponents}
@@ -233,6 +338,8 @@ export default function ManufacturingMindMap() {
             onSelectLinkType={setSelectedLinkType}
             showAddLinkType={showAddLinkType}
             onSetShowAddLinkType={setShowAddLinkType}
+            visibleLinkTypes={visibleLinkTypes}
+            onToggleLinkTypeVisibility={toggleLinkTypeVisibility}
           />
         </div>
 

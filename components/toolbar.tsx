@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Download, Upload, Undo2, Redo2 } from "lucide-react"
+import { Download, Upload, Undo2, Redo2, Grid3X3 } from "lucide-react"
 import { calculateTotalCost } from "@/lib/utils/export"
 import type { Part } from "@/lib/types"
 
@@ -15,6 +15,7 @@ interface ToolbarProps {
   onExportJSON: () => void
   onImportJSON: (event: React.ChangeEvent<HTMLInputElement>) => void
   onExportBOM: () => void
+  onAutoArrange: () => void
   parts: Part[]
 }
 
@@ -27,6 +28,7 @@ export function Toolbar({
   onExportJSON,
   onImportJSON,
   onExportBOM,
+  onAutoArrange,
   parts,
 }: ToolbarProps) {
   const totalCosts = calculateTotalCost(parts)
@@ -55,6 +57,13 @@ export function Toolbar({
           title="Redo"
         >
           <Redo2 size={18} />
+        </button>
+        <button
+          onClick={onAutoArrange}
+          className="px-3 py-2 hover:bg-gray-100 rounded"
+          title="Auto Arrange"
+        >
+          <Grid3X3 size={18} />
         </button>
       </div>
       <div className="flex gap-2 bg-white rounded-lg shadow-lg border border-gray-200 p-1">
