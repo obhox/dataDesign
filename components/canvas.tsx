@@ -15,6 +15,7 @@ import {
   type Node,
   type Edge,
   type NodeChange,
+  type NodeTypes,
   ConnectionLineType,
 } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
@@ -36,7 +37,7 @@ interface CanvasProps {
   onCanvasDrop: (e: React.DragEvent) => void
 }
 
-const nodeTypes = {
+const nodeTypes: NodeTypes = {
   custom: CustomNode,
 }
 
@@ -57,8 +58,8 @@ export function Canvas({
   onConnectionSelect,
   onCanvasDrop,
 }: CanvasProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
   const { screenToFlowPosition } = useReactFlow()
 
   useEffect(() => {
@@ -77,7 +78,7 @@ export function Canvas({
       source: conn.from.toString(),
       target: conn.to.toString(),
       type: "custom",
-      data: conn,
+      data: { ...conn },
       style: {
         stroke: conn.color || "#3b82f6",
         strokeWidth: conn.strokeWidth || 2,
@@ -104,7 +105,7 @@ export function Canvas({
 
       if (positionChanges.length > 0) {
         const updatedParts = parts.map((part) => {
-          const change = positionChanges.find((c) => c.id === part.id.toString()) as any
+          const change = positionChanges.find((c) => (c as any).id === part.id.toString()) as any
           if (change?.position) {
             return {
               ...part,

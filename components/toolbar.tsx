@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Download, Upload, Undo2, Redo2, Grid3X3 } from "lucide-react"
+import { Download, Upload, Undo2, Redo2, Grid3X3, Bot } from "lucide-react"
 import { calculateTotalCost } from "@/lib/utils/export"
 import type { Part } from "@/lib/types"
 
@@ -17,6 +17,8 @@ interface ToolbarProps {
   onExportBOM: () => void
   onAutoArrange: () => void
   parts: Part[]
+  onToggleAIChat: () => void
+  showAIChat: boolean
 }
 
 export function Toolbar({
@@ -30,6 +32,8 @@ export function Toolbar({
   onExportBOM,
   onAutoArrange,
   parts,
+  onToggleAIChat,
+  showAIChat,
 }: ToolbarProps) {
   const totalCosts = calculateTotalCost(parts)
 
@@ -80,6 +84,18 @@ export function Toolbar({
         className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg shadow-lg font-medium"
       >
         Export BOM
+      </button>
+      <button
+        onClick={onToggleAIChat}
+        className={`px-4 py-2 rounded-lg shadow-lg font-medium transition-all ${
+          showAIChat 
+            ? 'bg-blue-600 text-white hover:bg-blue-700' 
+            : 'bg-white text-gray-800 hover:bg-gray-50 border border-gray-200'
+        }`}
+        title="Toggle AI Assistant"
+      >
+        <Bot className="h-4 w-4 mr-2 inline" />
+        AI Assistant
       </button>
       {parts.length > 0 && Object.keys(totalCosts).length > 0 && (
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 px-4 py-2">

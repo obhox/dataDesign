@@ -13,6 +13,8 @@ import { Canvas } from "./canvas"
 import { ComponentLibrary } from "./component-library"
 import { LinkTypeSelector } from "./link-type-selector"
 import { PartEditor } from "./part-editor"
+import { AIChat } from "./ai-chat"
+import { AISuggestionsPanel } from "./ai-suggestions-panel"
 
 export default function ManufacturingMindMap() {
   const [parts, setParts] = useState<Part[]>([])
@@ -41,6 +43,7 @@ export default function ManufacturingMindMap() {
   const [showAddComponent, setShowAddComponent] = useState(false)
   const [newComponent, setNewComponent] = useState({ name: "", color: "#f3f4f6" })
   const [arrangementMode, setArrangementMode] = useState<'hierarchical' | 'spatial' | 'grid'>('hierarchical')
+  const [showAIChat, setShowAIChat] = useState(false)
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) => ({ ...prev, [categoryId]: !prev[categoryId as keyof typeof prev] }))
@@ -303,6 +306,8 @@ export default function ManufacturingMindMap() {
           onExportBOM={() => exportBOM(parts)}
           onAutoArrange={autoArrangeParts}
           parts={parts}
+          onToggleAIChat={() => setShowAIChat(!showAIChat)}
+          showAIChat={showAIChat}
         />
 
         <Canvas
@@ -320,27 +325,40 @@ export default function ManufacturingMindMap() {
         />
 
         <div className="absolute top-0 right-0 w-64 h-full bg-white border-l border-gray-200 shadow-2xl overflow-y-auto z-10 p-4">
-          <ComponentLibrary
-            expandedCategories={expandedCategories}
-            customComponents={customComponents}
-            showAddComponent={showAddComponent}
-            newComponent={newComponent}
-            onToggleCategory={toggleCategory}
-            onComponentDragStart={handleComponentDragStart}
-            onAddCustomComponent={addCustomComponent}
-            onDeleteCustomComponent={deleteCustomComponent}
-            onSetShowAddComponent={setShowAddComponent}
-            onSetNewComponent={setNewComponent}
-          />
-          <LinkTypeSelector
-            selectedLinkType={selectedLinkType}
-            customLinkTypes={customLinkTypes}
-            onSelectLinkType={setSelectedLinkType}
-            showAddLinkType={showAddLinkType}
-            onSetShowAddLinkType={setShowAddLinkType}
-            visibleLinkTypes={visibleLinkTypes}
-            onToggleLinkTypeVisibility={toggleLinkTypeVisibility}
-          />
+          <div className="space-y-4">
+            <ComponentLibrary
+              expandedCategories={expandedCategories}
+              customComponents={customComponents}
+              showAddComponent={showAddComponent}
+              newComponent={newComponent}
+              onToggleCategory={toggleCategory}
+              onComponentDragStart={handleComponentDragStart}
+              onAddCustomComponent={addCustomComponent}
+              onDeleteCustomComponent={deleteCustomComponent}
+              onSetShowAddComponent={setShowAddComponent}
+              onSetNewComponent={setNewComponent}
+            />
+            <LinkTypeSelector
+              selectedLinkType={selectedLinkType}
+              customLinkTypes={customLinkTypes}
+              onSelectLinkType={setSelectedLinkType}
+              showAddLinkType={showAddLinkType}
+              onSetShowAddLinkType={setShowAddLinkType}
+              visibleLinkTypes={visibleLinkTypes}
+              onToggleLinkTypeVisibility={toggleLinkTypeVisibility}
+            />
+            <AISuggestionsPanel
+              parts={parts}
+              connections={connections}
+              onApplySuggestion={(suggestion) => {
+                console.log('Applying suggestion:', suggestion)
+                // Handle suggestion application logic here
+              }}
+              onDismissSuggestion={(suggestionId) => {
+                console.log('Dismissing suggestion:', suggestionId)
+              }}
+            />
+          </div>
         </div>
 
         {selectedPart && (
@@ -362,6 +380,19 @@ export default function ManufacturingMindMap() {
               setImageResults([])
             }}
           />
+        )}
+
+        {showAIChat && (
+          <div className="absolute bottom-4 right-4 w-96 h-96 z-30">
+            <AIChat
+              parts={parts}
+              connections={connections}
+              onSuggestionApply={(suggestion) => {
+                // Handle AI suggestions here if needed
+                console.log('AI Suggestion:', suggestion)
+              }}
+            />
+          </div>
         )}
       </div>
     </ReactFlowProvider>

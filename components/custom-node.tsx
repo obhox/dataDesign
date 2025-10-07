@@ -3,15 +3,20 @@
 import { memo } from "react"
 import { Handle, Position, type NodeProps } from "@xyflow/react"
 import { ExternalLink } from "lucide-react"
-import type { Part } from "@/lib/types"
+import type { Part, Component } from "@/lib/types"
 import { ALL_COMPONENTS } from "@/lib/constants"
 
 interface CustomNodeData extends Part {
   isSelected: boolean
-  customComponents: any[]
+  customComponents: Component[]
 }
 
-export const CustomNode = memo(({ data, selected }: NodeProps<CustomNodeData>) => {
+interface CustomNodeProps {
+  data: CustomNodeData
+  selected?: boolean
+}
+
+export const CustomNode = memo(({ data, selected }: CustomNodeProps) => {
   const getComponentByType = (typeId: string) => {
     const component = ALL_COMPONENTS.find((c) => c.id === typeId)
     if (component) return component
@@ -54,24 +59,21 @@ export const CustomNode = memo(({ data, selected }: NodeProps<CustomNodeData>) =
             href={data.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-blue-50 transition-colors pointer-events-auto z-10"
-            title="View source"
+            className="absolute top-2 right-2 p-1 rounded-full bg-white/80 hover:bg-white transition-colors pointer-events-auto"
           >
-            <ExternalLink size={14} className="text-blue-600" />
+            <ExternalLink size={12} className="text-gray-600" />
           </a>
         )}
-        {/* Single prominent handle on the right side for connections */}
-        <Handle
-          type="source"
-          position={Position.Right}
-          className="!w-3 !h-3 !bg-blue-500 !border-2 !border-white !rounded-full hover:!scale-125 transition-transform !cursor-crosshair"
-          title="Drag to connect"
-        />
+
         <Handle
           type="target"
           position={Position.Left}
-          className="!w-3 !h-3 !bg-blue-500 !border-2 !border-white !rounded-full"
+          className="w-3 h-3 !bg-blue-500 !border-2 !border-white"
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="w-3 h-3 !bg-blue-500 !border-2 !border-white"
         />
       </div>
     </div>
