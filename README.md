@@ -1,4 +1,4 @@
-# Flow by Obhox
+# Flow by Obhox Systems
 
 An interactive manufacturing component visualization and BOM (Bill of Materials) management tool built with Next.js and React Flow.
 
@@ -163,4 +163,4 @@ For support, please open an issue on GitHub or contact the development team.
 
 ---
 
-**Flow by Obhox** - Streamlining manufacturing visualization and BOM management.
+**Flow by Obhox Systems** - Streamlining manufacturing visualization and BOM management.

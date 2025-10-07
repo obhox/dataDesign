@@ -7,7 +7,7 @@ import "./globals.css"
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
-  title: "Flow by Obhox",
+  title: "Flow by Obhox Systems",
   description: "Interactive manufacturing component visualization and BOM management tool",
   generator: "v0.app",
 }
