@@ -1,86 +1,126 @@
 "use client"
 
-import { Plus, Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
+import { Plus, Eye, EyeOff, Trash2 } from "lucide-react"
 import { LINK_TYPES } from "@/lib/constants"
 import type { LinkType } from "@/lib/types"
+import { CustomLinkTypeForm } from "./custom-link-type-form"
 
 interface LinkTypeSelectorProps {
-  selectedLinkType: LinkType
-  customLinkTypes: LinkType[]
+  selectedLinkType: LinkType | null
   onSelectLinkType: (linkType: LinkType) => void
+  customLinkTypes: LinkType[]
   showAddLinkType: boolean
   onSetShowAddLinkType: (show: boolean) => void
   visibleLinkTypes: Set<string>
   onToggleLinkTypeVisibility: (linkTypeId: string) => void
+  onAddCustomLinkType: (linkType: LinkType) => void
+  onDeleteCustomLinkType: (linkTypeId: string) => void
 }
 
 export function LinkTypeSelector({
   selectedLinkType,
-  customLinkTypes,
   onSelectLinkType,
+  customLinkTypes,
   showAddLinkType,
   onSetShowAddLinkType,
   visibleLinkTypes,
   onToggleLinkTypeVisibility,
+  onAddCustomLinkType,
+  onDeleteCustomLinkType,
 }: LinkTypeSelectorProps) {
   const allLinkTypes = [...LINK_TYPES, ...customLinkTypes]
 
+  const handleAddLinkType = (linkType: LinkType) => {
+    onAddCustomLinkType(linkType)
+    onSetShowAddLinkType(false)
+  }
+
+  const handleDeleteCustomLinkType = (linkTypeId: string) => {
+    if (confirm("Delete this custom link type?")) {
+      onDeleteCustomLinkType(linkTypeId)
+    }
+  }
+
   return (
-    <div className="border-t border-gray-200 pt-6 mt-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-800">Link Types</h2>
+    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-medium text-gray-800">Link Types</h3>
         <button
           onClick={() => onSetShowAddLinkType(!showAddLinkType)}
-          className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          className="p-1.5 hover:bg-gray-100 rounded text-blue-600"
+          title="Add custom link type"
         >
           <Plus size={16} />
         </button>
       </div>
-      <div className="text-xs text-gray-600 mb-4">
-        Selected: <span className="font-semibold">{selectedLinkType.name}</span>
-      </div>
-      <div className="space-y-2 max-h-80 overflow-y-auto">
+
+      {showAddLinkType && (
+        <div className="mb-3">
+          <CustomLinkTypeForm
+            onAddLinkType={handleAddLinkType}
+            onCancel={() => onSetShowAddLinkType(false)}
+            existingLinkTypes={allLinkTypes}
+          />
+        </div>
+      )}
+
+      <div className="space-y-1 max-h-64 overflow-y-auto">
         {allLinkTypes.map((linkType) => {
+          const isCustom = customLinkTypes.some(ct => ct.id === linkType.id)
           const isVisible = visibleLinkTypes.has(linkType.id)
+          const isSelected = selectedLinkType?.id === linkType.id
+
           return (
             <div
               key={linkType.id}
-              className={`border-2 rounded-lg p-3 transition-all ${selectedLinkType.id === linkType.id ? "bg-blue-50 border-blue-500" : "border-gray-300 bg-white"} ${!isVisible ? "opacity-50" : ""}`}
+              className={`flex items-start gap-2 p-3 rounded cursor-pointer transition-colors ${
+                isSelected ? "bg-blue-50 border border-blue-200" : "hover:bg-gray-50"
+              }`}
             >
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex-1">
-                  <div className="font-medium text-sm text-gray-800">{linkType.name}</div>
-                  <div className="text-xs text-gray-500">{linkType.description}</div>
-                </div>
-                <div className="flex gap-1">
-                  <button
-                    onClick={() => onToggleLinkTypeVisibility(linkType.id)}
-                    className={`p-1 rounded hover:bg-gray-100 ${isVisible ? "text-blue-600" : "text-gray-400"}`}
-                    title={isVisible ? "Hide connections" : "Show connections"}
-                  >
-                    {isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
-                  </button>
-                  <button
-                    onClick={() => onSelectLinkType(linkType)}
-                    className="p-1 rounded hover:bg-gray-100 text-gray-600"
-                    title="Select for new connections"
-                  >
-                    <div className="w-4 h-4 border-2 border-current rounded-full" />
-                  </button>
-                </div>
-              </div>
-              <svg width="100%" height="20">
-                <line
-                  x1="0"
-                  y1="10"
-                  x2="100%"
-                  y2="10"
-                  stroke={linkType.color}
-                  strokeWidth={linkType.strokeWidth}
-                  strokeDasharray={linkType.dashArray}
-                  opacity={isVisible ? 1 : 0.3}
-                />
-              </svg>
+              <button
+                onClick={() => onToggleLinkTypeVisibility(linkType.id)}
+                className="p-0.5 hover:bg-gray-200 rounded mt-0.5 flex-shrink-0"
+                title={isVisible ? "Hide" : "Show"}
+              >
+                {isVisible ? <Eye size={12} /> : <EyeOff size={12} />}
+              </button>
+
+              <div
+                 onClick={() => onSelectLinkType(linkType)}
+                 className="flex-1 flex flex-col gap-1.5"
+               >
+                 <div className="flex items-center gap-2">
+                   <span className="text-sm font-medium truncate">{linkType.name}</span>
+                   {isCustom && (
+                     <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded flex-shrink-0">
+                       Custom
+                     </span>
+                   )}
+                 </div>
+                 <svg width="100%" height="16" className="min-w-0">
+                   <line
+                     x1="4"
+                     y1="8"
+                     x2="calc(100% - 4px)"
+                     y2="8"
+                     stroke={linkType.color}
+                     strokeWidth={Math.min(linkType.strokeWidth, 4)}
+                     strokeDasharray={linkType.dashArray}
+                   />
+                 </svg>
+                 <div className="text-xs text-gray-500 truncate leading-tight">{linkType.description}</div>
+               </div>
+
+              {isCustom && (
+                <button
+                  onClick={() => handleDeleteCustomLinkType(linkType.id)}
+                  className="p-0.5 hover:bg-red-100 rounded text-red-600 mt-0.5 flex-shrink-0"
+                  title="Delete custom link type"
+                >
+                  <Trash2 size={12} />
+                </button>
+              )}
             </div>
           )
         })}

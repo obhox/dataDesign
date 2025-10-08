@@ -283,7 +283,7 @@ export class GeminiAIService {
         ...part,
         id: index + 1,
         customColor: part.customColor || this.getPartColor(part.type),
-        imageUrl: part.imageUrl || '/placeholder.svg',
+        imageUrl: '',
         sourceUrl: part.sourceUrl || ''
       }));
 
@@ -464,7 +464,7 @@ export class GeminiAIService {
       const partsWithDefaults = designData.parts.map((part: any) => ({
         ...part,
         customColor: part.customColor || this.getPartColor(part.type),
-        imageUrl: part.imageUrl || '/placeholder.svg',
+        imageUrl: '',
         sourceUrl: part.sourceUrl || ''
       }));
 

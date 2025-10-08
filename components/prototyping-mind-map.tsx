@@ -46,6 +46,27 @@ export default function PrototypingMindMap() {
     setExpandedCategories((prev) => ({ ...prev, [categoryId]: !prev[categoryId as keyof typeof prev] }))
   }
 
+  const addCustomLinkType = (linkType: LinkType) => {
+    setCustomLinkTypes([...customLinkTypes, linkType])
+    setVisibleLinkTypes(prev => new Set([...prev, linkType.id]))
+  }
+
+  const deleteCustomLinkType = (linkTypeId: string) => {
+    setCustomLinkTypes(customLinkTypes.filter(lt => lt.id !== linkTypeId))
+    setVisibleLinkTypes(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(linkTypeId)
+      return newSet
+    })
+    // If the deleted link type was selected, switch to the first available one
+    if (selectedLinkType.id === linkTypeId) {
+      const remainingLinkTypes = [...LINK_TYPES, ...customLinkTypes.filter(lt => lt.id !== linkTypeId)]
+      if (remainingLinkTypes.length > 0) {
+        setSelectedLinkType(remainingLinkTypes[0])
+      }
+    }
+  }
+
   const addCustomComponent = () => {
     if (newComponent.name.trim()) {
       const customComp: Component = {
@@ -341,6 +362,8 @@ export default function PrototypingMindMap() {
               onSetShowAddLinkType={setShowAddLinkType}
               visibleLinkTypes={visibleLinkTypes}
               onToggleLinkTypeVisibility={toggleLinkTypeVisibility}
+              onAddCustomLinkType={addCustomLinkType}
+              onDeleteCustomLinkType={deleteCustomLinkType}
             />
           </div>
         </div>
