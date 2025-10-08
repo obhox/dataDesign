@@ -50,6 +50,15 @@ export async function POST(request: NextRequest) {
         }
         break
       
+      case 'designEdit':
+        const editResult = await geminiAI.editDesign(message, parts || [], connections || [])
+        response = editResult.description
+        designData = {
+          parts: editResult.parts,
+          connections: editResult.connections
+        }
+        break
+      
       default:
         response = await geminiAI.generatePrototypingAdvice(message, {
           parts: parts || [],

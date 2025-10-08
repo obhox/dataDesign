@@ -315,6 +315,171 @@ export class GeminiAIService {
   }
 
   /**
+   * Edit an existing design based on modification request
+   */
+  async editDesign(
+    modificationRequest: string, 
+    currentParts: Part[], 
+    currentConnections: Connection[]
+  ): Promise<{ parts: Partial<Part>[], connections: Partial<Connection>[], description: string }> {
+    const prompt = `
+      You are a prototyping design assistant. Your task is to modify an existing design based on the user's request.
+      
+      CURRENT DESIGN:
+      Parts: ${JSON.stringify(currentParts.map(p => ({ 
+        id: p.id, 
+        name: p.name, 
+        type: p.type, 
+        functionality: p.functionality,
+        cost: p.cost,
+        costUnit: p.costUnit,
+        quantity: p.quantity,
+        x: p.x,
+        y: p.y
+      })), null, 2)}
+      
+      Connections: ${JSON.stringify(currentConnections.map(c => ({ 
+        id: c.id,
+        from: c.from, 
+        to: c.to, 
+        linkType: c.linkType,
+        color: c.color,
+        strokeWidth: c.strokeWidth,
+        dashArray: c.dashArray
+      })), null, 2)}
+      
+      MODIFICATION REQUEST: ${modificationRequest}
+      
+      CRITICAL: You MUST respond with ONLY a valid JSON object. No explanations, no markdown, no code blocks, no additional text - JUST JSON.
+      
+      Based on the modification request, generate the COMPLETE updated design. This should include:
+      
+      1. ALL parts (modified, new, and unchanged) with the following structure:
+         - id: keep existing IDs for unchanged parts, use new sequential IDs for new parts
+         - name: descriptive name
+         - type: category (e.g., "Sensor", "Actuator", "Controller", "Display", "Power", "Mechanical")
+         - functionality: what this part does in the design
+         - cost: estimated cost as a number
+         - costUnit: "USD" or other currency
+         - quantity: number of units needed
+         - customColor: hex color code based on part type (Sensor: "#10B981", Controller: "#3B82F6", Display: "#8B5CF6", Power: "#F59E0B", Actuator: "#EF4444", Mechanical: "#6B7280")
+         - x: x-coordinate for positioning (between 100-800)
+         - y: y-coordinate for positioning (between 100-600)
+      
+      2. ALL connections (modified, new, and unchanged) with these EXACT linkType options:
+         AVAILABLE LINK TYPES (use these exact values):
+         - "assembly": Physical assembly connection (color: "#3b82f6", strokeWidth: 2, dashArray: "")
+         - "power": Electrical power connection (color: "#eab308", strokeWidth: 3, dashArray: "")
+         - "data": Data/signal flow connection (color: "#8b5cf6", strokeWidth: 2, dashArray: "5,5")
+         - "material": Material flow connection (color: "#10b981", strokeWidth: 2, dashArray: "")
+         - "dependency": Dependency relationship (color: "#ef4444", strokeWidth: 2, dashArray: "10,5")
+         - "sequence": Sequential order connection (color: "#06b6d4", strokeWidth: 2, dashArray: "")
+         
+         Each connection must have:
+         - id: keep existing IDs for unchanged connections, use new sequential IDs for new connections
+         - from: ID of source part
+         - to: ID of target part
+         - linkType: one of the exact values above
+         - color: exact hex color for the linkType
+         - strokeWidth: exact stroke width for the linkType
+         - dashArray: exact dash array for the linkType
+       
+       3. A description explaining what was changed and how the updated design works
+       
+       IMPORTANT RULES:
+       - If the request is to replace a component, remove the old one and add the new one in a similar position
+       - If the request is to add components, keep all existing parts and add new ones
+       - If the request is to remove components, exclude them from the output
+       - Maintain logical connections - update connection endpoints if parts are replaced
+       - Preserve unchanged parts with their original IDs and positions
+       - Use appropriate positioning to avoid overlaps
+       
+       RESPOND WITH ONLY THIS JSON FORMAT - NO OTHER TEXT:
+       {
+         "parts": [
+            {
+              "id": 1,
+              "name": "Arduino Uno Controller",
+              "type": "Controller",
+              "functionality": "Main microcontroller for system control",
+              "cost": 25.99,
+              "costUnit": "USD",
+              "quantity": 1,
+              "customColor": "#3B82F6",
+              "x": 200,
+              "y": 150
+            }
+          ],
+         "connections": [
+            {
+              "id": 1,
+              "from": 1,
+              "to": 2,
+              "linkType": "data",
+              "color": "#8b5cf6",
+              "strokeWidth": 2,
+              "dashArray": "5,5"
+            }
+          ],
+         "description": "Updated design based on modification request"
+       }
+       
+       OUTPUT ONLY JSON - NO MARKDOWN, NO EXPLANATIONS, NO CODE BLOCKS
+     `;
+
+    try {
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      
+      // Clean the response text to ensure it's pure JSON
+      let cleanedText = text.trim();
+      
+      // Remove any markdown code blocks if present
+      if (cleanedText.startsWith('```json')) {
+        cleanedText = cleanedText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (cleanedText.startsWith('```')) {
+        cleanedText = cleanedText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+      
+      // Remove any leading/trailing whitespace or newlines
+      cleanedText = cleanedText.trim();
+      
+      // Ensure the response starts with { and ends with }
+      if (!cleanedText.startsWith('{') || !cleanedText.endsWith('}')) {
+        throw new Error('AI response is not valid JSON format');
+      }
+
+      const designData = JSON.parse(cleanedText);
+      
+      if (!designData.parts || !Array.isArray(designData.parts)) {
+        throw new Error('Invalid design data: parts array is missing');
+      }
+      
+      if (!designData.connections || !Array.isArray(designData.connections)) {
+        throw new Error('Invalid design data: connections array is missing');
+      }
+
+      // Ensure parts have proper structure
+      const partsWithDefaults = designData.parts.map((part: any) => ({
+        ...part,
+        customColor: part.customColor || this.getPartColor(part.type),
+        imageUrl: part.imageUrl || '/placeholder.svg',
+        sourceUrl: part.sourceUrl || ''
+      }));
+
+      return {
+        parts: partsWithDefaults,
+        connections: designData.connections,
+        description: designData.description || 'Design updated successfully'
+      };
+    } catch (error) {
+      console.error('Error editing design:', error);
+      throw new Error(`Failed to edit design: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
    * Generate general prototyping advice
    */
   async generatePrototypingAdvice(query: string, context?: { parts: Part[], connections: Connection[] }): Promise<string> {

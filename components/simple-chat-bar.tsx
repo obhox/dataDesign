@@ -67,6 +67,28 @@ export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated 
                               messageContent.toLowerCase().includes('prototype') ||
                               messageContent.toLowerCase().includes('create'))
 
+      // Check if this is a design edit request
+      const isEditRequest = !isDesignRequest && 
+                           (designContext?.parts && designContext.parts.length > 0) &&
+                           (messageContent.toLowerCase().includes('change') ||
+                            messageContent.toLowerCase().includes('replace') ||
+                            messageContent.toLowerCase().includes('modify') ||
+                            messageContent.toLowerCase().includes('update') ||
+                            messageContent.toLowerCase().includes('edit') ||
+                            messageContent.toLowerCase().includes('swap') ||
+                            messageContent.toLowerCase().includes('add') ||
+                            messageContent.toLowerCase().includes('remove') ||
+                            messageContent.toLowerCase().includes('delete') ||
+                            messageContent.toLowerCase().includes('substitute'))
+
+      // Determine the appropriate category
+      let category = 'prototypingAdvice'
+      if (isDesignRequest) {
+        category = 'designGeneration'
+      } else if (isEditRequest) {
+        category = 'designEdit'
+      }
+
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: {
@@ -74,7 +96,7 @@ export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated 
         },
         body: JSON.stringify({
           message: messageContent,
-          category: isDesignRequest ? 'designGeneration' : 'prototypingAdvice',
+          category: category,
           parts: designContext?.parts || [],
           connections: designContext?.connections || []
         }),
