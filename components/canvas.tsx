@@ -76,11 +76,7 @@ export function Canvas({
   }, [parts, selectedPart, customComponents, setNodes])
 
   useEffect(() => {
-    console.log("[Canvas] Processing connections:", connections)
-    console.log("[Canvas] Available parts:", parts.map(p => ({ id: p.id, name: p.name })))
-    
     const newEdges: Edge[] = connections.map((conn) => {
-      console.log("[Canvas] Creating edge for connection:", conn)
       
       // Validate that source and target parts exist
       const sourcePart = parts.find(p => p.id === conn.from)
@@ -113,11 +109,9 @@ export function Canvas({
         selected: selectedConnection?.id === conn.id,
       }
       
-      console.log("[Canvas] Created edge:", edge)
       return edge
     })
     
-    console.log("[Canvas] Setting edges:", newEdges)
     setEdges(newEdges)
   }, [connections, selectedConnection, setEdges])
 
@@ -149,7 +143,6 @@ export function Canvas({
 
   const onConnect = useCallback(
     (connection: FlowConnection) => {
-      console.log("[v0] Connection created:", connection)
       const fromId = Number.parseInt(connection.source)
       const toId = Number.parseInt(connection.target)
 
@@ -162,7 +155,6 @@ export function Canvas({
         strokeWidth: selectedLinkType.strokeWidth,
         dashArray: selectedLinkType.dashArray,
       }
-      console.log("[v0] Adding new connection:", newConnection)
       onConnectionsChange([...connections, newConnection])
     },
     [connections, selectedLinkType, onConnectionsChange],
@@ -271,7 +263,7 @@ export function Canvas({
         )}
       </div>
       <SimpleChatBar 
-        onSendMessage={(message) => console.log('AI Message:', message)} 
+        onSendMessage={(message) => {}} 
         designContext={{ parts, connections }}
         onDesignGenerated={(newParts, newConnections, customLinkTypes) => {
             onPartsChange(newParts as Part[])
