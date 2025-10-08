@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { Bot, User, Send, Loader2, Lightbulb, Wrench, BarChart3, AlertTriangle } from 'lucide-react'
 import type { Part, Connection } from '@/lib/types'
+import { AIResultPopup, useAIResultPopup, type AIResult } from './ai-result-popup'
 
 interface Message {
   id: string
@@ -22,6 +23,7 @@ interface AIChatProps {
   parts: Part[]
   connections: Connection[]
   onSuggestionApply?: (suggestion: any) => void
+  onAIResult?: (result: AIResult) => void
 }
 
 const QUICK_ACTIONS = [
@@ -31,7 +33,7 @@ const QUICK_ACTIONS = [
   { id: 'troubleshoot', label: 'Troubleshoot', icon: AlertTriangle, category: 'troubleshooting' },
 ]
 
-export function AIChat({ parts, connections, onSuggestionApply }: AIChatProps) {
+export function AIChat({ parts, connections, onSuggestionApply, onAIResult }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -51,7 +53,7 @@ export function AIChat({ parts, connections, onSuggestionApply }: AIChatProps) {
     }
   }, [messages])
 
-  const sendMessage = async (content: string, category?: string) => {
+  const sendMessage = async (content: string, category?: string, showPopup: boolean = true) => {
     if (!content.trim() || isLoading) return
 
     const userMessage: Message = {
@@ -95,6 +97,31 @@ export function AIChat({ parts, connections, onSuggestionApply }: AIChatProps) {
       }
 
       setMessages(prev => [...prev, aiMessage])
+
+      // Show AI result popup only if showPopup is true and callback is provided
+      if (onAIResult && data.response && showPopup) {
+        const resultType: AIResult['type'] = category === 'troubleshooting' ? 'error' : 
+                                           category === 'suggestion' ? 'suggestion' : 
+                                           category === 'analysis' ? 'info' : 'success'
+        
+        const aiResult: AIResult = {
+          id: `ai-result-${Date.now()}`,
+          type: resultType,
+          title: `AI ${category || 'Response'}`,
+          content: data.response,
+          timestamp: new Date(),
+          category: category as any,
+          actions: category === 'suggestion' && onSuggestionApply ? [
+            {
+              label: 'Apply Suggestion',
+              action: () => onSuggestionApply(data),
+              variant: 'default'
+            }
+          ] : undefined
+        }
+        
+        onAIResult(aiResult)
+      }
     } catch (error) {
       console.error('Error sending message:', error)
       const errorMessage: Message = {
@@ -126,7 +153,7 @@ export function AIChat({ parts, connections, onSuggestionApply }: AIChatProps) {
         message = 'I\'m experiencing issues with my prototyping process. Can you help troubleshoot?'
         break
     }
-    sendMessage(message, action.category)
+    sendMessage(message, action.category, false) // Don't show popup for quick actions
   }
 
   const getCategoryIcon = (category?: string) => {

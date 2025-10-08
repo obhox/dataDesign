@@ -13,8 +13,6 @@ import { Canvas } from "./canvas"
 import { ComponentLibrary } from "./component-library"
 import { LinkTypeSelector } from "./link-type-selector"
 import { PartEditor } from "./part-editor"
-import { AIChat } from "./ai-chat"
-import { AISuggestionsPanel } from "./ai-suggestions-panel"
 
 export default function PrototypingMindMap() {
   const [parts, setParts] = useState<Part[]>([])
@@ -43,7 +41,6 @@ export default function PrototypingMindMap() {
   const [showAddComponent, setShowAddComponent] = useState(false)
   const [newComponent, setNewComponent] = useState({ name: "", color: "#f3f4f6" })
   const [arrangementMode, setArrangementMode] = useState<'hierarchical' | 'spatial' | 'grid'>('hierarchical')
-  const [showAIChat, setShowAIChat] = useState(false)
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) => ({ ...prev, [categoryId]: !prev[categoryId as keyof typeof prev] }))
@@ -306,8 +303,6 @@ export default function PrototypingMindMap() {
           onExportBOM={() => exportBOM(parts)}
           onAutoArrange={autoArrangeParts}
           parts={parts}
-          onToggleAIChat={() => setShowAIChat(!showAIChat)}
-          showAIChat={showAIChat}
         />
 
         <Canvas
@@ -347,17 +342,6 @@ export default function PrototypingMindMap() {
               visibleLinkTypes={visibleLinkTypes}
               onToggleLinkTypeVisibility={toggleLinkTypeVisibility}
             />
-            <AISuggestionsPanel
-              parts={parts}
-              connections={connections}
-              onApplySuggestion={(suggestion) => {
-                console.log('Applying suggestion:', suggestion)
-                // Handle suggestion application logic here
-              }}
-              onDismissSuggestion={(suggestionId) => {
-                console.log('Dismissing suggestion:', suggestionId)
-              }}
-            />
           </div>
         </div>
 
@@ -380,19 +364,6 @@ export default function PrototypingMindMap() {
               setImageResults([])
             }}
           />
-        )}
-
-        {showAIChat && (
-          <div className="absolute bottom-4 right-4 w-96 h-96 z-30">
-            <AIChat
-              parts={parts}
-              connections={connections}
-              onSuggestionApply={(suggestion) => {
-                // Handle AI suggestions here if needed
-                console.log('AI Suggestion:', suggestion)
-              }}
-            />
-          </div>
         )}
       </div>
     </ReactFlowProvider>
