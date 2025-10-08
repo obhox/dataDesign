@@ -129,19 +129,48 @@ export class GeminiAIService {
    * Generate general prototyping advice
    */
   async generatePrototypingAdvice(query: string, context?: { parts: Part[], connections: Connection[] }): Promise<string> {
-    const contextInfo = context ? `
-      Current System Context:
-      Parts: ${JSON.stringify(context.parts.map(p => ({ name: p.name, type: p.type })), null, 2)}
-      Connections: ${JSON.stringify(context.connections.map(c => ({ from: c.from, to: c.to, linkType: c.linkType })), null, 2)}
-    ` : '';
+    const contextInfo = context && context.parts.length > 0 ? `
+      Current Design Context:
+      
+      Parts in your design (${context.parts.length} total):
+      ${JSON.stringify(context.parts.map(p => ({ 
+        name: p.name, 
+        type: p.type, 
+        functionality: p.functionality,
+        cost: p.cost,
+        costUnit: p.costUnit,
+        quantity: p.quantity
+      })), null, 2)}
+      
+      Connections in your design (${context.connections.length} total):
+      ${JSON.stringify(context.connections.map(c => ({ 
+        from: c.from, 
+        to: c.to, 
+        linkType: c.linkType 
+      })), null, 2)}
+      
+      Design Summary:
+      - Total parts: ${context.parts.length}
+      - Total connections: ${context.connections.length}
+      - Part types: ${[...new Set(context.parts.map(p => p.type))].join(', ')}
+      - Connection types: ${[...new Set(context.connections.map(c => c.linkType))].join(', ')}
+    ` : 'No current design loaded. Providing general prototyping advice.';
 
     const prompt = `
-      Prototyping Query: ${query}
+      User Question: ${query}
       
       ${contextInfo}
       
-      As a prototyping expert, provide helpful, accurate, and practical advice. 
-      Focus on rapid iteration best practices, design thinking principles, and cost-effective prototyping solutions.
+      As a prototyping expert, provide helpful, accurate, and practical advice based on the user's current design context. 
+      
+      When responding:
+      1. Reference specific parts and connections from their design when relevant
+      2. Suggest improvements or optimizations based on their current setup
+      3. Provide cost-effective solutions considering their existing components
+      4. Focus on rapid iteration best practices and design thinking principles
+      5. If they have no design loaded, provide general prototyping guidance
+      
+      Make your response conversational and directly relevant to their specific design situation.
     `;
 
     try {

@@ -245,7 +245,10 @@ export function Canvas({
           </div>
         )}
       </div>
-      <SimpleChatBar onSendMessage={(message) => console.log('AI Message:', message)} />
+      <SimpleChatBar 
+        onSendMessage={(message) => console.log('AI Message:', message)} 
+        designContext={{ parts, connections }}
+      />
     </div>
   )
 }
