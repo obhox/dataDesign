@@ -86,18 +86,39 @@ export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated 
 
       const data = await response.json()
       
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'ai',
-        content: data.response || 'Sorry, I could not generate a response.',
-        timestamp: new Date()
+      // Function to check if response is JSON-only (for design generation)
+      const isJSONResponse = (text: string): boolean => {
+        const trimmed = text.trim()
+        return (trimmed.startsWith('{') && trimmed.endsWith('}')) || 
+               (trimmed.startsWith('[') && trimmed.endsWith(']'))
       }
-
-      setMessages(prev => [...prev, aiMessage])
-
+      
       // If design data was generated, apply it to the canvas
       if (data.designData && onDesignGenerated) {
         onDesignGenerated(data.designData.parts, data.designData.connections)
+      }
+      
+      // Only show AI message if it's not a pure JSON response
+      const responseContent = data.response || 'Sorry, I could not generate a response.'
+      if (!isJSONResponse(responseContent)) {
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'ai',
+          content: responseContent,
+          timestamp: new Date()
+        }
+
+        setMessages(prev => [...prev, aiMessage])
+      } else {
+        // For JSON responses, show a friendly message instead
+        const friendlyMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'ai',
+          content: 'Design generated successfully! Check the canvas to see your new prototype.',
+          timestamp: new Date()
+        }
+
+        setMessages(prev => [...prev, friendlyMessage])
       }
     } catch (error) {
       console.error('Error calling AI API:', error)

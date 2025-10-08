@@ -74,25 +74,48 @@ export function Canvas({
   }, [parts, selectedPart, customComponents, setNodes])
 
   useEffect(() => {
-    const newEdges: Edge[] = connections.map((conn) => ({
-      id: conn.id.toString(),
-      source: conn.from.toString(),
-      target: conn.to.toString(),
-      type: "custom",
-      data: { ...conn },
-      style: {
-        stroke: conn.color || "#3b82f6",
-        strokeWidth: conn.strokeWidth || 2,
-        strokeDasharray: conn.dashArray || "",
-      },
-      markerEnd: {
-        type: "arrowclosed" as const,
-        color: conn.color || "#3b82f6",
-        width: 20,
-        height: 20,
-      },
-      selected: selectedConnection?.id === conn.id,
-    }))
+    console.log("[Canvas] Processing connections:", connections)
+    console.log("[Canvas] Available parts:", parts.map(p => ({ id: p.id, name: p.name })))
+    
+    const newEdges: Edge[] = connections.map((conn) => {
+      console.log("[Canvas] Creating edge for connection:", conn)
+      
+      // Validate that source and target parts exist
+      const sourcePart = parts.find(p => p.id === conn.from)
+      const targetPart = parts.find(p => p.id === conn.to)
+      
+      if (!sourcePart) {
+        console.warn(`[Canvas] Source part not found for connection: from=${conn.from}, to=${conn.to}`)
+      }
+      if (!targetPart) {
+        console.warn(`[Canvas] Target part not found for connection: from=${conn.from}, to=${conn.to}`)
+      }
+      
+      const edge = {
+        id: conn.id.toString(),
+        source: conn.from.toString(),
+        target: conn.to.toString(),
+        type: "custom",
+        data: { ...conn },
+        style: {
+          stroke: conn.color || "#3b82f6",
+          strokeWidth: conn.strokeWidth || 2,
+          strokeDasharray: conn.dashArray || "",
+        },
+        markerEnd: {
+          type: "arrowclosed" as const,
+          color: conn.color || "#3b82f6",
+          width: 20,
+          height: 20,
+        },
+        selected: selectedConnection?.id === conn.id,
+      }
+      
+      console.log("[Canvas] Created edge:", edge)
+      return edge
+    })
+    
+    console.log("[Canvas] Setting edges:", newEdges)
     setEdges(newEdges)
   }, [connections, selectedConnection, setEdges])
 

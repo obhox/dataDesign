@@ -170,13 +170,22 @@ export class GeminiAIService {
          - x: x-coordinate for positioning (between 100-800)
          - y: y-coordinate for positioning (between 100-600)
       
-      2. A list of connections between parts with:
+      2. A list of connections between parts with these EXACT linkType options:
+         AVAILABLE LINK TYPES (use these exact values):
+         - "assembly": Physical assembly connection (color: "#3b82f6", strokeWidth: 2, dashArray: "")
+         - "power": Electrical power connection (color: "#eab308", strokeWidth: 3, dashArray: "")
+         - "data": Data/signal flow connection (color: "#8b5cf6", strokeWidth: 2, dashArray: "5,5")
+         - "material": Material flow connection (color: "#10b981", strokeWidth: 2, dashArray: "")
+         - "dependency": Dependency relationship (color: "#ef4444", strokeWidth: 2, dashArray: "10,5")
+         - "sequence": Sequential order connection (color: "#06b6d4", strokeWidth: 2, dashArray: "")
+         
+         Each connection must have:
          - from: index of source part (0-based array index)
          - to: index of target part (0-based array index)
-         - linkType: type of connection ("Data", "Power", "Mechanical", "Wireless", "Control")
-         - color: hex color code based on link type (Data: "#3B82F6", Power: "#DC2626", Mechanical: "#6B7280", Wireless: "#8B5CF6", Control: "#059669")
-         - strokeWidth: line thickness (Data: 2, Power: 3, Mechanical: 4, Wireless: 2, Control: 2)
-         - dashArray: "0" for solid connections, "5,5" for wireless/data connections
+         - linkType: one of the exact values above
+         - color: exact hex color for the linkType
+         - strokeWidth: exact stroke width for the linkType
+         - dashArray: exact dash array for the linkType
        
        3. A description explaining the design concept and how it works
        
@@ -184,14 +193,25 @@ export class GeminiAIService {
        {
          "parts": [
             {
-              "name": "part name",
-              "type": "category",
-              "functionality": "description",
+              "name": "Arduino Uno Controller",
+              "type": "Controller",
+              "functionality": "Main microcontroller for system control",
               "cost": 25.99,
               "costUnit": "USD",
               "quantity": 1,
-              "customColor": "#10B981",
+              "customColor": "#3B82F6",
               "x": 200,
+              "y": 150
+            },
+            {
+              "name": "Temperature Sensor",
+              "type": "Sensor",
+              "functionality": "Measures ambient temperature",
+              "cost": 12.50,
+              "costUnit": "USD",
+              "quantity": 1,
+              "customColor": "#10B981",
+              "x": 400,
               "y": 150
             }
           ],
@@ -199,22 +219,29 @@ export class GeminiAIService {
             {
               "from": 0,
               "to": 1,
-              "linkType": "Data",
-              "color": "#3B82F6",
+              "linkType": "data",
+              "color": "#8b5cf6",
               "strokeWidth": 2,
               "dashArray": "5,5"
             }
           ],
-         "description": "explanation of the design"
+         "description": "A simple temperature monitoring system with Arduino controller and sensor"
        }
        
        REQUIREMENTS: 
         - Use 0-based indices for connections (first part is index 0, second is index 1, etc.)
         - Ensure every connection references valid part indices
-        - Create meaningful connections that make sense for the design
+        - Use ONLY the exact linkType values provided above
+        - Use the exact color, strokeWidth, and dashArray for each linkType
+        - Create meaningful connections that make logical sense:
+          * "assembly" for physical mounting/attachment
+          * "power" for electrical power supply
+          * "data" for control signals and sensor data
+          * "material" for fluid/material flow
+          * "dependency" for functional dependencies
+          * "sequence" for ordered operations
         - Position parts logically with adequate spacing (minimum 150px apart)
-        - Use appropriate colors for each part type and connection type
-        - Vary visual styles to create an aesthetically pleasing design
+        - Use appropriate colors for each part type
         - OUTPUT ONLY JSON - NO MARKDOWN, NO EXPLANATIONS, NO CODE BLOCKS
      `;
 
