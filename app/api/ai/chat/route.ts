@@ -4,7 +4,7 @@ import type { Part, Connection } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, category, parts, connections } = await request.json()
+    const { message, category, parts, connections, designType } = await request.json()
 
     if (!message) {
       return NextResponse.json(
@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     let response: string
+    let designData: any = null
 
     // Route to appropriate AI service method based on category
     switch (category) {
@@ -40,6 +41,15 @@ export async function POST(request: NextRequest) {
         response = await geminiAI.generateTroubleshootingSuggestions(message, parts || [])
         break
       
+      case 'designGeneration':
+        const result = await geminiAI.generateDesign(message, designType)
+        response = result.description
+        designData = {
+          parts: result.parts,
+          connections: result.connections
+        }
+        break
+      
       default:
         response = await geminiAI.generatePrototypingAdvice(message, {
           parts: parts || [],
@@ -48,7 +58,10 @@ export async function POST(request: NextRequest) {
         break
     }
 
-    return NextResponse.json({ response })
+    return NextResponse.json({ 
+      response,
+      ...(designData && { designData })
+    })
 
   } catch (error) {
     console.error('AI Chat API Error:', error)

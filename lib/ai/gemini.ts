@@ -5,7 +5,7 @@ import type { Part, Connection } from '@/lib/types';
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || '');
 
 export class GeminiAIService {
-  private model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+  private model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
 
   /**
    * Generate prototyping process suggestions based on parts and connections
@@ -35,6 +35,26 @@ export class GeminiAIService {
       console.error('Error generating process suggestions:', error);
       throw new Error('Failed to generate process suggestions');
     }
+  }
+
+  /**
+   * Get color based on part type for visual variety
+   */
+  private getPartColor(type: string): string {
+    const colorMap: { [key: string]: string } = {
+      'Sensor': '#10B981',      // Green
+      'Controller': '#3B82F6',  // Blue
+      'Display': '#8B5CF6',     // Purple
+      'Power': '#F59E0B',       // Amber
+      'Actuator': '#EF4444',    // Red
+      'Mechanical': '#6B7280',  // Gray
+      'Communication': '#06B6D4', // Cyan
+      'Storage': '#84CC16',     // Lime
+      'Interface': '#F97316',   // Orange
+      'Processing': '#EC4899'   // Pink
+    };
+    
+    return colorMap[type] || '#3B82F6'; // Default to blue
   }
 
   /**
@@ -122,6 +142,148 @@ export class GeminiAIService {
     } catch (error) {
       console.error('Error generating troubleshooting suggestions:', error);
       throw new Error('Failed to generate troubleshooting suggestions');
+    }
+  }
+
+  /**
+   * Generate a complete design based on user requirements
+   */
+  async generateDesign(requirements: string, designType?: string): Promise<{ parts: Partial<Part>[], connections: Partial<Connection>[], description: string }> {
+    const prompt = `
+      You are a prototyping design assistant. Your task is to generate a complete design based on the requirements.
+      
+      Design Requirements: ${requirements}
+      Design Type: ${designType || 'general prototype'}
+      
+      CRITICAL: You MUST respond with ONLY a valid JSON object. No explanations, no markdown, no code blocks, no additional text - JUST JSON.
+      
+      Generate a complete prototyping design that includes:
+      
+      1. A list of parts with the following structure for each part:
+         - name: descriptive name
+         - type: category (e.g., "Sensor", "Actuator", "Controller", "Display", "Power", "Mechanical")
+         - functionality: what this part does in the design
+         - cost: estimated cost as a number
+         - costUnit: "USD" or other currency
+         - quantity: number of units needed
+         - customColor: hex color code based on part type (Sensor: "#10B981", Controller: "#3B82F6", Display: "#8B5CF6", Power: "#F59E0B", Actuator: "#EF4444", Mechanical: "#6B7280")
+         - x: x-coordinate for positioning (between 100-800)
+         - y: y-coordinate for positioning (between 100-600)
+      
+      2. A list of connections between parts with:
+         - from: index of source part (0-based array index)
+         - to: index of target part (0-based array index)
+         - linkType: type of connection ("Data", "Power", "Mechanical", "Wireless", "Control")
+         - color: hex color code based on link type (Data: "#3B82F6", Power: "#DC2626", Mechanical: "#6B7280", Wireless: "#8B5CF6", Control: "#059669")
+         - strokeWidth: line thickness (Data: 2, Power: 3, Mechanical: 4, Wireless: 2, Control: 2)
+         - dashArray: "0" for solid connections, "5,5" for wireless/data connections
+       
+       3. A description explaining the design concept and how it works
+       
+       RESPOND WITH ONLY THIS JSON FORMAT - NO OTHER TEXT:
+       {
+         "parts": [
+            {
+              "name": "part name",
+              "type": "category",
+              "functionality": "description",
+              "cost": 25.99,
+              "costUnit": "USD",
+              "quantity": 1,
+              "customColor": "#10B981",
+              "x": 200,
+              "y": 150
+            }
+          ],
+         "connections": [
+            {
+              "from": 0,
+              "to": 1,
+              "linkType": "Data",
+              "color": "#3B82F6",
+              "strokeWidth": 2,
+              "dashArray": "5,5"
+            }
+          ],
+         "description": "explanation of the design"
+       }
+       
+       REQUIREMENTS: 
+        - Use 0-based indices for connections (first part is index 0, second is index 1, etc.)
+        - Ensure every connection references valid part indices
+        - Create meaningful connections that make sense for the design
+        - Position parts logically with adequate spacing (minimum 150px apart)
+        - Use appropriate colors for each part type and connection type
+        - Vary visual styles to create an aesthetically pleasing design
+        - OUTPUT ONLY JSON - NO MARKDOWN, NO EXPLANATIONS, NO CODE BLOCKS
+     `;
+
+    try {
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      
+      // Clean the response text to ensure it's pure JSON
+      let cleanedText = text.trim();
+      
+      // Remove any markdown code blocks if present
+      if (cleanedText.startsWith('```json')) {
+        cleanedText = cleanedText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (cleanedText.startsWith('```')) {
+        cleanedText = cleanedText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+      
+      // Remove any leading/trailing whitespace or newlines
+      cleanedText = cleanedText.trim();
+      
+      // Ensure the response starts with { and ends with }
+      if (!cleanedText.startsWith('{') || !cleanedText.endsWith('}')) {
+        throw new Error('AI response is not valid JSON format');
+      }
+
+      const designData = JSON.parse(cleanedText);
+      
+      if (!designData.parts || !Array.isArray(designData.parts)) {
+        throw new Error('Invalid design data: parts array is missing');
+      }
+      
+      if (!designData.connections || !Array.isArray(designData.connections)) {
+        throw new Error('Invalid design data: connections array is missing');
+      }
+
+      // Add 1-based IDs to parts
+      const partsWithIds = designData.parts.map((part: any, index: number) => ({
+        ...part,
+        id: index + 1,
+        customColor: part.customColor || this.getPartColor(part.type),
+        imageUrl: part.imageUrl || '/placeholder.svg',
+        sourceUrl: part.sourceUrl || ''
+      }));
+
+      // Process connections to use actual part IDs
+      const connectionsWithIds = designData.connections.map((connection: any, index: number) => {
+        // Validate connection indices
+        if (connection.from < 0 || connection.from >= partsWithIds.length ||
+            connection.to < 0 || connection.to >= partsWithIds.length) {
+          throw new Error(`Invalid connection indices: from=${connection.from}, to=${connection.to}, parts count=${partsWithIds.length}`);
+        }
+        
+        return {
+          ...connection,
+          id: index + 1,
+          from: partsWithIds[connection.from].id,
+          to: partsWithIds[connection.to].id
+        };
+      });
+
+      return {
+        parts: partsWithIds,
+        connections: connectionsWithIds,
+        description: designData.description || 'Generated design'
+      };
+    } catch (error) {
+      console.error('Error generating design:', error);
+      throw new Error(`Failed to generate design: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

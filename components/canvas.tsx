@@ -248,6 +248,10 @@ export function Canvas({
       <SimpleChatBar 
         onSendMessage={(message) => console.log('AI Message:', message)} 
         designContext={{ parts, connections }}
+        onDesignGenerated={(newParts, newConnections) => {
+          onPartsChange(newParts as Part[])
+          onConnectionsChange(newConnections as Connection[])
+        }}
       />
     </div>
   )

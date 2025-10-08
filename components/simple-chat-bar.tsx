@@ -7,7 +7,7 @@ import rehypeHighlight from 'rehype-highlight'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
-import { Send, Bot, User, Loader2, X } from 'lucide-react'
+import { Send, Bot, User, Loader2, X, Wand2, Lightbulb } from 'lucide-react'
 
 import type { Part, Connection } from '@/lib/types'
 
@@ -29,9 +29,10 @@ interface DesignContext {
 interface SimpleChatBarProps {
   onSendMessage?: (message: string) => void
   designContext?: DesignContext
+  onDesignGenerated?: (parts: Part[], connections: Connection[]) => void
 }
 
-export function SimpleChatBar({ onSendMessage, designContext }: SimpleChatBarProps) {
+export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated }: SimpleChatBarProps) {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -54,19 +55,26 @@ export function SimpleChatBar({ onSendMessage, designContext }: SimpleChatBarPro
     }
 
     setMessages(prev => [...prev, userMessage])
+    const messageContent = input.trim()
     setInput('')
     setIsLoading(true)
     setIsExpanded(true)
 
     try {
+      // Check if this is a design generation request
+      const isDesignRequest = messageContent.toLowerCase().includes('generate') && 
+                             (messageContent.toLowerCase().includes('design') || 
+                              messageContent.toLowerCase().includes('prototype') ||
+                              messageContent.toLowerCase().includes('create'))
+
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: input.trim(),
-          category: 'prototypingAdvice',
+          message: messageContent,
+          category: isDesignRequest ? 'designGeneration' : 'prototypingAdvice',
           parts: designContext?.parts || [],
           connections: designContext?.connections || []
         }),
@@ -86,6 +94,11 @@ export function SimpleChatBar({ onSendMessage, designContext }: SimpleChatBarPro
       }
 
       setMessages(prev => [...prev, aiMessage])
+
+      // If design data was generated, apply it to the canvas
+      if (data.designData && onDesignGenerated) {
+        onDesignGenerated(data.designData.parts, data.designData.connections)
+      }
     } catch (error) {
       console.error('Error calling AI API:', error)
       const errorMessage: Message = {
@@ -99,7 +112,7 @@ export function SimpleChatBar({ onSendMessage, designContext }: SimpleChatBarPro
       setIsLoading(false)
     }
 
-    onSendMessage?.(input.trim())
+    onSendMessage?.(messageContent)
   }
 
   // Drag event handlers
@@ -150,6 +163,17 @@ export function SimpleChatBar({ onSendMessage, designContext }: SimpleChatBarPro
   const clearMessages = () => {
     setMessages([])
     setIsExpanded(false)
+  }
+
+  const handleQuickDesignGeneration = (prompt: string) => {
+    setInput(prompt)
+    // Auto-submit the design generation request
+    setTimeout(() => {
+      const form = document.querySelector('form') as HTMLFormElement
+      if (form) {
+        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
+      }
+    }, 100)
   }
 
   return (
@@ -289,11 +313,48 @@ export function SimpleChatBar({ onSendMessage, designContext }: SimpleChatBarPro
       {/* Input Form - Centered at Bottom */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 w-80">
         <div className="bg-white/90 backdrop-blur-md border border-gray-200/50 rounded-2xl p-3 shadow-lg shadow-gray-200/50">
+          {/* Quick Design Generation Buttons */}
+          <div className="flex gap-2 mb-3 flex-wrap">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => handleQuickDesignGeneration('Generate a smart home automation prototype design')}
+              className="text-xs bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100"
+              disabled={isLoading}
+            >
+              <Wand2 className="h-3 w-3 mr-1" />
+              Smart Home
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => handleQuickDesignGeneration('Generate an IoT sensor monitoring prototype design')}
+              className="text-xs bg-gradient-to-r from-green-50 to-teal-50 border-green-200 hover:from-green-100 hover:to-teal-100"
+              disabled={isLoading}
+            >
+              <Lightbulb className="h-3 w-3 mr-1" />
+              IoT Sensors
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => handleQuickDesignGeneration('Generate a robotics control prototype design')}
+              className="text-xs bg-gradient-to-r from-orange-50 to-red-50 border-orange-200 hover:from-orange-100 hover:to-red-100"
+              disabled={isLoading}
+            >
+              <Wand2 className="h-3 w-3 mr-1" />
+              Robotics
+            </Button>
+          </div>
+          
           <form onSubmit={handleSubmit} className="flex gap-3">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask AI about your prototype..."
+              placeholder="Ask AI about your prototype or say 'generate design for...'..."
               className="flex-1 text-sm border-0 bg-gray-50/50 focus:bg-white transition-colors duration-200 rounded-xl"
               disabled={isLoading}
             />
