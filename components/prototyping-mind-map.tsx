@@ -338,6 +338,14 @@ export default function PrototypingMindMap() {
           onPartSelect={setSelectedPart}
           onConnectionSelect={setSelectedConnection}
           onCanvasDrop={() => {}}
+          onCustomLinkTypesGenerated={(newCustomLinkTypes) => {
+            // Add new custom link types to the existing ones
+            newCustomLinkTypes.forEach(linkType => {
+              if (!customLinkTypes.find(existing => existing.id === linkType.id)) {
+                addCustomLinkType(linkType)
+              }
+            })
+          }}
         />
 
         <div className="absolute top-0 right-0 w-64 h-full bg-white border-l border-gray-200 shadow-2xl overflow-y-auto z-10 p-4">

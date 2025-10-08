@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
         response = result.description
         designData = {
           parts: result.parts,
-          connections: result.connections
+          connections: result.connections,
+          ...(result.customLinkTypes && { customLinkTypes: result.customLinkTypes })
         }
         break
       
@@ -55,7 +56,8 @@ export async function POST(request: NextRequest) {
         response = editResult.description
         designData = {
           parts: editResult.parts,
-          connections: editResult.connections
+          connections: editResult.connections,
+          ...(editResult.customLinkTypes && { customLinkTypes: editResult.customLinkTypes })
         }
         break
       

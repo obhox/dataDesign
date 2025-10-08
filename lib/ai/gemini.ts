@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { Part, Connection } from '@/lib/types';
+import type { Part, Connection, LinkType } from '@/lib/types';
 
 // Initialize the Gemini AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || '');
@@ -148,7 +148,7 @@ export class GeminiAIService {
   /**
    * Generate a complete design based on user requirements
    */
-  async generateDesign(requirements: string, designType?: string): Promise<{ parts: Partial<Part>[], connections: Partial<Connection>[], description: string }> {
+  async generateDesign(requirements: string, designType?: string): Promise<{ parts: Partial<Part>[], connections: Partial<Connection>[], description: string, customLinkTypes?: LinkType[] }> {
     const prompt = `
       You are a prototyping design assistant. Your task is to generate a complete design based on the requirements.
       
@@ -170,8 +170,9 @@ export class GeminiAIService {
          - x: x-coordinate for positioning (between 100-800)
          - y: y-coordinate for positioning (between 100-600)
       
-      2. A list of connections between parts with these EXACT linkType options:
-         AVAILABLE LINK TYPES (use these exact values):
+      2. A list of connections between parts. You can use predefined link types OR create custom ones:
+         
+         PREDEFINED LINK TYPES (recommended for common connections):
          - "assembly": Physical assembly connection (color: "#3b82f6", strokeWidth: 2, dashArray: "")
          - "power": Electrical power connection (color: "#eab308", strokeWidth: 3, dashArray: "")
          - "data": Data/signal flow connection (color: "#8b5cf6", strokeWidth: 2, dashArray: "5,5")
@@ -179,13 +180,20 @@ export class GeminiAIService {
          - "dependency": Dependency relationship (color: "#ef4444", strokeWidth: 2, dashArray: "10,5")
          - "sequence": Sequential order connection (color: "#06b6d4", strokeWidth: 2, dashArray: "")
          
+         CUSTOM LINK TYPES (create when needed for specific connections):
+         You can create custom link types by choosing appropriate:
+         - linkType: descriptive name (e.g., "thermal", "optical", "hydraulic", "wireless", "mechanical")
+         - color: hex color that represents the connection type
+         - strokeWidth: 1-4 (thicker for more important connections)
+         - dashArray: "" for solid, "5,5" for dashed, "2,3" for dotted, "10,5" for long dashes
+         
          Each connection must have:
          - from: index of source part (0-based array index)
          - to: index of target part (0-based array index)
-         - linkType: one of the exact values above
-         - color: exact hex color for the linkType
-         - strokeWidth: exact stroke width for the linkType
-         - dashArray: exact dash array for the linkType
+         - linkType: predefined type OR custom descriptive name
+         - color: hex color appropriate for the connection type
+         - strokeWidth: appropriate thickness (1-4)
+         - dashArray: appropriate dash pattern
        
        3. A description explaining the design concept and how it works
        
@@ -303,10 +311,14 @@ export class GeminiAIService {
         };
       });
 
+      const validatedConnections = connectionsWithIds.map((conn: any) => this.validateConnection(conn));
+      const customLinkTypes = this.extractCustomLinkTypes(validatedConnections);
+
       return {
         parts: partsWithIds,
-        connections: connectionsWithIds,
-        description: designData.description || 'Generated design'
+        connections: validatedConnections,
+        description: designData.description || 'Generated design',
+        customLinkTypes: customLinkTypes.length > 0 ? customLinkTypes : undefined
       };
     } catch (error) {
       console.error('Error generating design:', error);
@@ -321,7 +333,7 @@ export class GeminiAIService {
     modificationRequest: string, 
     currentParts: Part[], 
     currentConnections: Connection[]
-  ): Promise<{ parts: Partial<Part>[], connections: Partial<Connection>[], description: string }> {
+  ): Promise<{ parts: Partial<Part>[], connections: Partial<Connection>[], description: string, customLinkTypes?: LinkType[] }> {
     const prompt = `
       You are a prototyping design assistant. Your task is to modify an existing design based on the user's request.
       
@@ -366,8 +378,9 @@ export class GeminiAIService {
          - x: x-coordinate for positioning (between 100-800)
          - y: y-coordinate for positioning (between 100-600)
       
-      2. ALL connections (modified, new, and unchanged) with these EXACT linkType options:
-         AVAILABLE LINK TYPES (use these exact values):
+      2. ALL connections (modified, new, and unchanged). You can use predefined link types OR create custom ones:
+         
+         PREDEFINED LINK TYPES (recommended for common connections):
          - "assembly": Physical assembly connection (color: "#3b82f6", strokeWidth: 2, dashArray: "")
          - "power": Electrical power connection (color: "#eab308", strokeWidth: 3, dashArray: "")
          - "data": Data/signal flow connection (color: "#8b5cf6", strokeWidth: 2, dashArray: "5,5")
@@ -375,14 +388,21 @@ export class GeminiAIService {
          - "dependency": Dependency relationship (color: "#ef4444", strokeWidth: 2, dashArray: "10,5")
          - "sequence": Sequential order connection (color: "#06b6d4", strokeWidth: 2, dashArray: "")
          
+         CUSTOM LINK TYPES (create when needed for specific connections):
+         You can create custom link types by choosing appropriate:
+         - linkType: descriptive name (e.g., "thermal", "optical", "hydraulic", "wireless", "mechanical")
+         - color: hex color that represents the connection type
+         - strokeWidth: 1-4 (thicker for more important connections)
+         - dashArray: "" for solid, "5,5" for dashed, "2,3" for dotted, "10,5" for long dashes
+         
          Each connection must have:
          - id: keep existing IDs for unchanged connections, use new sequential IDs for new connections
          - from: ID of source part
          - to: ID of target part
-         - linkType: one of the exact values above
-         - color: exact hex color for the linkType
-         - strokeWidth: exact stroke width for the linkType
-         - dashArray: exact dash array for the linkType
+         - linkType: predefined type OR custom descriptive name
+         - color: hex color appropriate for the connection type
+         - strokeWidth: appropriate thickness (1-4)
+         - dashArray: appropriate dash pattern
        
        3. A description explaining what was changed and how the updated design works
        
@@ -468,10 +488,14 @@ export class GeminiAIService {
         sourceUrl: part.sourceUrl || ''
       }));
 
+      const validatedConnections = designData.connections.map((conn: any) => this.validateConnection(conn));
+      const customLinkTypes = this.extractCustomLinkTypes(validatedConnections);
+
       return {
         parts: partsWithDefaults,
-        connections: designData.connections,
-        description: designData.description || 'Design updated successfully'
+        connections: validatedConnections,
+        description: designData.description || 'Design updated successfully',
+        customLinkTypes: customLinkTypes.length > 0 ? customLinkTypes : undefined
       };
     } catch (error) {
       console.error('Error editing design:', error);
@@ -535,6 +559,63 @@ export class GeminiAIService {
       console.error('Error generating prototyping advice:', error);
       throw new Error('Failed to generate prototyping advice');
     }
+  }
+  /**
+   * Validate and sanitize connection data for custom link types
+   */
+  private validateConnection(connection: any): any {
+    // Ensure required fields exist
+    if (!connection.linkType || !connection.color) {
+      throw new Error('Connection missing required fields: linkType and color are required');
+    }
+
+    // Validate color format (hex color)
+    if (!/^#[0-9A-Fa-f]{6}$/.test(connection.color)) {
+      throw new Error(`Invalid color format: ${connection.color}. Must be a valid hex color (e.g., #3b82f6)`);
+    }
+
+    // Validate strokeWidth
+    const strokeWidth = connection.strokeWidth || 2;
+    if (strokeWidth < 1 || strokeWidth > 4) {
+      throw new Error(`Invalid strokeWidth: ${strokeWidth}. Must be between 1 and 4`);
+    }
+
+    // Validate dashArray format
+    const dashArray = connection.dashArray || '';
+    if (dashArray && !/^(\d+,\d+)*\d*$/.test(dashArray)) {
+      throw new Error(`Invalid dashArray format: ${dashArray}. Must be empty or comma-separated numbers (e.g., "5,5")`);
+    }
+
+    return {
+      ...connection,
+      strokeWidth,
+      dashArray
+    };
+  }
+  /**
+   * Extract custom link types from connections that are not in predefined types
+   */
+  private extractCustomLinkTypes(connections: any[]): LinkType[] {
+    const predefinedTypes = new Set(['assembly', 'power', 'data', 'material', 'dependency', 'sequence']);
+    const customLinkTypesMap = new Map<string, LinkType>();
+
+    connections.forEach((conn: any) => {
+      if (!predefinedTypes.has(conn.linkType)) {
+        const linkTypeId = `custom-${conn.linkType.toLowerCase().replace(/\s+/g, '-')}`;
+        if (!customLinkTypesMap.has(linkTypeId)) {
+          customLinkTypesMap.set(linkTypeId, {
+            id: linkTypeId,
+            name: conn.linkType,
+            color: conn.color,
+            strokeWidth: conn.strokeWidth || 2,
+            dashArray: conn.dashArray || '',
+            description: `Custom ${conn.linkType} connection`
+          });
+        }
+      }
+    });
+
+    return Array.from(customLinkTypesMap.values());
   }
 }
 

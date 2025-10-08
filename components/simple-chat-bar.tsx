@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Send, Bot, User, Loader2, X, Wand2, Lightbulb } from 'lucide-react'
 
-import type { Part, Connection } from '@/lib/types'
+import type { Part, Connection, LinkType } from '@/lib/types'
 
 // Add CSS for syntax highlighting
 import 'highlight.js/styles/github.css'
@@ -29,7 +29,7 @@ interface DesignContext {
 interface SimpleChatBarProps {
   onSendMessage?: (message: string) => void
   designContext?: DesignContext
-  onDesignGenerated?: (parts: Part[], connections: Connection[]) => void
+  onDesignGenerated?: (parts: Part[], connections: Connection[], customLinkTypes?: LinkType[]) => void
 }
 
 export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated }: SimpleChatBarProps) {
@@ -117,7 +117,11 @@ export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated 
       
       // If design data was generated, apply it to the canvas
       if (data.designData && onDesignGenerated) {
-        onDesignGenerated(data.designData.parts, data.designData.connections)
+        onDesignGenerated(
+          data.designData.parts, 
+          data.designData.connections,
+          data.designData.customLinkTypes
+        )
       }
       
       // Only show AI message if it's not a pure JSON response

@@ -19,7 +19,7 @@ import {
   ConnectionLineType,
 } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
-import type { Part, Connection, Component } from "@/lib/types"
+import type { Part, Connection, Component, LinkType } from "@/lib/types"
 import { CustomNode } from "./custom-node"
 import { CustomEdge } from "./custom-edge"
 import { SimpleChatBar } from "./simple-chat-bar"
@@ -36,6 +36,7 @@ interface CanvasProps {
   onPartSelect: (part: Part | null) => void
   onConnectionSelect: (conn: Connection | null) => void
   onCanvasDrop: (e: React.DragEvent) => void
+  onCustomLinkTypesGenerated?: (customLinkTypes: LinkType[]) => void
 }
 
 const nodeTypes: NodeTypes = {
@@ -58,6 +59,7 @@ export function Canvas({
   onPartSelect,
   onConnectionSelect,
   onCanvasDrop,
+  onCustomLinkTypesGenerated,
 }: CanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
@@ -271,10 +273,14 @@ export function Canvas({
       <SimpleChatBar 
         onSendMessage={(message) => console.log('AI Message:', message)} 
         designContext={{ parts, connections }}
-        onDesignGenerated={(newParts, newConnections) => {
-          onPartsChange(newParts as Part[])
-          onConnectionsChange(newConnections as Connection[])
-        }}
+        onDesignGenerated={(newParts, newConnections, customLinkTypes) => {
+            onPartsChange(newParts as Part[])
+            onConnectionsChange(newConnections as Connection[])
+            // Handle custom link types if provided
+            if (customLinkTypes && customLinkTypes.length > 0 && onCustomLinkTypesGenerated) {
+              onCustomLinkTypesGenerated(customLinkTypes)
+            }
+          }}
       />
     </div>
   )
