@@ -296,4 +296,4 @@ Flow can be deployed on any platform that supports Next.js:
 
 **Flow** - Streamlining prototyping visualization with AI-powered intelligence.
 
-Made with ❤️ by the open source community.
+Made with ❤️ by Joy Oguntona
