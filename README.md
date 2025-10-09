@@ -1,4 +1,4 @@
-# Flow - AI-Powered Prototyping Visualization Tool
+# Flow by Obhox Systems- AI-Powered Prototyping Visualization Tool
 
 An intelligent, interactive prototyping component visualization and BOM (Bill of Materials) management tool built with Next.js and React Flow. Flow combines visual design capabilities with AI-powered assistance to streamline the prototyping process.
 
