@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { Download, Upload, Undo2, Redo2, Grid3X3 } from "lucide-react"
-import { calculateTotalCost } from "@/lib/utils/export"
+import { Download, Upload, Undo2, Redo2, Grid3X3, Camera } from "lucide-react"
+import { calculateTotalCost, exportCanvasAsImage } from "@/lib/utils/export"
 import type { Part } from "@/lib/types"
 
 interface ToolbarProps {
@@ -32,6 +32,14 @@ export function Toolbar({
   parts,
 }: ToolbarProps) {
   const totalCosts = calculateTotalCost(parts)
+
+  const handleExportImage = async () => {
+    try {
+      await exportCanvasAsImage('png')
+    } catch (error) {
+      console.error('Failed to export canvas image:', error)
+    }
+  }
 
   return (
     <div className="absolute top-6 left-6 z-20 flex gap-3 items-center flex-wrap">
@@ -69,6 +77,9 @@ export function Toolbar({
       <div className="flex gap-2 bg-white rounded-lg shadow-lg border border-gray-200 p-1">
         <button onClick={onExportJSON} className="px-3 py-2 hover:bg-gray-100 rounded" title="Save">
           <Download size={18} />
+        </button>
+        <button onClick={handleExportImage} className="px-3 py-2 hover:bg-gray-100 rounded" title="Export as Image">
+          <Camera size={18} />
         </button>
         <label className="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" title="Load">
           <Upload size={18} />
