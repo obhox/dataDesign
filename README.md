@@ -1,29 +1,29 @@
-# Flow by Obhox Systems- AI-Powered Prototyping Visualization Tool
+# Flow by Obhox Systems - AI-Powered System Design Canvas
 
-An intelligent, interactive prototyping component visualization and BOM (Bill of Materials) management tool built with Next.js and React Flow. Flow combines visual design capabilities with AI-powered assistance to streamline the prototyping process.
+An intelligent, interactive system architecture and data flow visualization tool built with Next.js and React Flow. Flow combines visual design capabilities with AI-powered assistance to streamline system design and architecture planning.
 
 ## ✨ Key Features
 
 ### 🎯 Core Functionality
-- **Interactive Mind Map**: Visual representation of prototyping components and their relationships using React Flow
-- **Component Library**: Comprehensive library of prototyping components categorized by type (mechanical, electrical, control, hydraulic)
-- **BOM Management**: Track costs, quantities, and specifications for each component with real-time calculations
+- **Interactive System Diagrams**: Visual representation of system components and data flows using React Flow
+- **Component Library**: Comprehensive library of system components categorized by type (databases, APIs/services, message systems, data processing)
+- **Architecture Documentation**: Export detailed markdown documentation of your system architecture
 - **Real-time Editing**: Add, edit, and delete components with live updates and instant visual feedback
-- **Connection Management**: Define relationships between components with customizable link types
-- **Export/Import**: Save and load project configurations in JSON format for easy sharing and backup
+- **Data Flow Management**: Define relationships between components with simplified connection types
+- **Export/Import**: Save and load system designs in JSON format for easy sharing and backup
 
 ### 🤖 AI-Powered Features
-- **AI Design Generation**: Generate complete prototyping designs from natural language descriptions
+- **AI Architecture Generation**: Generate complete system architectures from natural language descriptions
 - **Smart Suggestions**: Get AI-powered recommendations for additional components and optimizations
-- **Workflow Analysis**: Analyze prototyping efficiency and identify potential bottlenecks
-- **Troubleshooting Assistant**: Get help diagnosing and solving prototyping issues
-- **Interactive Chat**: Conversational AI interface for design guidance and technical support
-- **Design Editing**: Modify existing designs using natural language commands
+- **Architecture Analysis**: Analyze system design for scalability, reliability, and performance
+- **Troubleshooting Assistant**: Get help diagnosing and solving architectural issues
+- **Interactive Chat**: Conversational AI interface for architecture guidance and technical support
+- **Design Editing**: Modify existing architectures using natural language commands
 
 ### 🎨 User Experience
 - **Modern UI**: Clean, responsive interface built with Tailwind CSS and Radix UI
-- **Drag & Drop**: Intuitive component placement and connection creation
-- **Sample Projects**: Pre-loaded robotics project demonstrating system capabilities
+- **Drag & Drop**: Intuitive component placement and data flow creation
+- **Sample Projects**: Pre-loaded e-commerce microservices architecture demonstrating system capabilities
 - **Mobile Responsive**: Works seamlessly across desktop, tablet, and mobile devices
 - **Dark/Light Mode**: Theme support for comfortable usage in any environment
 
@@ -91,52 +91,49 @@ An intelligent, interactive prototyping component visualization and BOM (Bill of
 
 ### Getting Started
 
-1. **Load Sample Data**: Click "Load Sample" to see a pre-configured autonomous mobile robot project
-2. **Explore AI Features**: Use the AI chat interface to generate new designs or get suggestions
-3. **Add Components**: Use the component library on the left to drag and drop new parts
-4. **Create Connections**: Select components and use the connection tools to link them
-5. **Edit Properties**: Click on any component to edit its properties, cost, and specifications
-6. **Export Project**: Save your work using the export functionality
+1. **Load Sample Data**: Click "Load Sample" to see a pre-configured e-commerce microservices architecture
+2. **Explore AI Features**: Use the AI chat interface to generate new system designs or get suggestions
+3. **Add Components**: Use the component library on the right to drag and drop new services, databases, etc.
+4. **Create Data Flows**: Select components and use the connection tools to link them
+5. **Edit Properties**: Click on any component to edit its technology stack, capacity, and specifications
+6. **Export Architecture**: Save your work using JSON export or generate documentation
 
-### AI-Powered Design Generation
+### AI-Powered Architecture Generation
 
-Flow's AI capabilities allow you to create prototypes using natural language:
+Flow's AI capabilities allow you to design systems using natural language:
 
-- **Generate New Designs**: Type "Generate a design for a robotic arm" or "Create a drone prototype"
-- **Modify Existing Designs**: Say "Add a camera sensor" or "Replace the motor with a servo"
-- **Get Suggestions**: Ask "What components would improve this design?" or "How can I optimize this?"
-- **Troubleshoot Issues**: Request help with "This motor isn't working properly" or "How do I connect these components?"
+- **Generate New Architectures**: Type "Generate a microservices architecture for an e-commerce platform" or "Create a data pipeline for analytics"
+- **Modify Existing Designs**: Say "Add a Redis cache layer" or "Replace PostgreSQL with MongoDB"
+- **Get Suggestions**: Ask "What components would improve scalability?" or "How can I optimize this architecture?"
+- **Troubleshoot Issues**: Request help with "This service is a bottleneck" or "How do I improve reliability?"
 
 ### Component Categories
 
-- **Mechanical**: Frames, gears, wheels, bearings, actuators, etc.
-- **Electrical**: Motors, sensors, controllers, batteries, power supplies, etc.
-- **Control**: PLCs, HMIs, drives, encoders, microcontrollers, etc.
-- **Hydraulic**: Pumps, cylinders, valves, filters, reservoirs, etc.
+- **Databases**: PostgreSQL, MySQL, MongoDB, Redis, Elasticsearch, DynamoDB, etc.
+- **APIs & Services**: REST APIs, GraphQL, gRPC, Microservices, Lambda functions, WebSockets, etc.
+- **Message Systems**: RabbitMQ, Kafka, SQS, Pub/Sub, Event buses, Kinesis, etc.
+- **Data Processing**: ETL pipelines, Stream processors, Data lakes, Analytics engines, CDC, etc.
 
 ### Connection Types
 
-- **Assembly**: Physical assembly relationships
-- **Power**: Electrical power connections  
-- **Data**: Communication and data flow
-- **Material**: Material flow paths
-- **Dependency**: Logical dependencies
-- **Sequence**: Process sequence relationships
-- **Custom**: User-defined connection types
+- **Data Flow**: Synchronous data transfer between services
+- **Async Flow**: Asynchronous or event-driven communication
+- **Dependency**: Service dependencies
+- **Custom**: User-defined connection types for specific protocols
 
-## 🤖 Sample Project: Autonomous Mobile Robot
+## 🤖 Sample Project: E-Commerce Microservices Architecture
 
-The included sample project demonstrates a comprehensive robotics system with:
+The included sample project demonstrates a scalable e-commerce system with:
 
-- **Chassis & Structure**: Aluminum frame with mounting points
-- **Locomotion System**: Dual drive motors with omni-directional wheels
-- **Power System**: LiPo battery with power distribution
-- **Control System**: Raspberry Pi 4B with motor drivers
-- **Sensing System**: LiDAR, RGB-D camera, IMU, ultrasonic sensors
-- **Manipulation System**: Servo-driven gripper assembly
-- **Communication**: WiFi/Bluetooth module with emergency stop
+- **Frontend Layer**: React web application
+- **API Gateway**: Kong gateway for routing and rate limiting
+- **Microservices**: User Service (Node.js), Product Service (Python FastAPI), Order Service (Java Spring Boot)
+- **Databases**: PostgreSQL for users/orders, MongoDB for products
+- **Caching**: Redis for session management and frequently accessed data
+- **Event Streaming**: Kafka for order events and inventory updates
+- **Data Flows**: Synchronous API calls, asynchronous event-driven communication, service dependencies
 
-Total project cost: ~$1,000 with detailed component specifications.
+Total system: 10 components with defined capacity and SLA specifications.
 
 ## 📁 Project Structure
 
@@ -175,8 +172,8 @@ flow/
 
 ## 🔧 Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production  
+- `npm run dev` - Start development server at http://localhost:3000
+- `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
@@ -185,12 +182,12 @@ flow/
 ### Adding New Components
 
 1. Edit `lib/constants.ts` to add new component types to `COMPONENT_CATEGORIES`
-2. Update the `ALL_COMPONENTS` array with your new components
-3. Components support custom colors, icons, and properties
+2. Update the component library with your new system components
+3. Components support custom colors, icons, and technology specifications
 
 ### Modifying Sample Data
 
-Update the `SAMPLE_DATA` object in `lib/constants.ts` to create your own sample projects with custom parts and connections.
+Update the `SAMPLE_DATA` object in `lib/constants.ts` to create your own sample architectures with custom components and data flows.
 
 ### Extending AI Capabilities
 
@@ -294,6 +291,6 @@ Flow can be deployed on any platform that supports Next.js:
 
 ---
 
-**Flow** - Streamlining prototyping visualization with AI-powered intelligence.
+**Flow** - Streamlining system design and architecture planning with AI-powered intelligence.
 
 Made with ❤️ by Joy Oguntona

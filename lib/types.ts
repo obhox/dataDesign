@@ -5,12 +5,21 @@ export interface Part {
   customColor: string
   functionality: string
   imageUrl: string
-  cost: string
-  costUnit: string
-  quantity: number
-  sourceUrl: string
   x: number
   y: number
+
+  // Optional legacy BOM fields (kept for backwards compatibility)
+  cost?: string
+  costUnit?: string
+  quantity?: number
+  sourceUrl?: string
+
+  // System design fields
+  technology?: string    // e.g., "PostgreSQL 15", "Node.js 20"
+  version?: string       // e.g., "v2.1.0"
+  description?: string   // Additional architectural notes
+  capacity?: string      // e.g., "1000 req/s", "100GB storage"
+  sla?: string          // e.g., "99.9% uptime"
 }
 
 export interface Connection {

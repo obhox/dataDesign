@@ -1,5 +1,5 @@
-import PrototypingMindMap from "@/components/prototyping-mind-map"
+import SystemDesignCanvas from "@/components/system-design-canvas"
 
 export default function Home() {
-  return <PrototypingMindMap />
+  return <SystemDesignCanvas />
 }

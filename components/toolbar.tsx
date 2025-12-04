@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { Download, Upload, Undo2, Redo2, Grid3X3, Camera } from "lucide-react"
-import { calculateTotalCost, exportCanvasAsImage } from "@/lib/utils/export"
+import { exportCanvasAsImage } from "@/lib/utils/export"
 import type { Part } from "@/lib/types"
 
 interface ToolbarProps {
@@ -31,8 +31,6 @@ export function Toolbar({
   onAutoArrange,
   parts,
 }: ToolbarProps) {
-  const totalCosts = calculateTotalCost(parts)
-
   const handleExportImage = async () => {
     try {
       await exportCanvasAsImage('png')
@@ -88,23 +86,10 @@ export function Toolbar({
       </div>
       <button
         onClick={onExportBOM}
-        className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg shadow-lg font-medium"
+        className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow-lg font-medium"
       >
-        Export BOM
+        Export Architecture Doc
       </button>
-
-      {parts.length > 0 && Object.keys(totalCosts).length > 0 && (
-        <div className="bg-white rounded-lg shadow-lg border border-gray-200 px-4 py-2">
-          <div className="text-xs text-gray-500 font-semibold">TOTAL COST</div>
-          <div className="flex gap-3 mt-1">
-            {Object.entries(totalCosts).map(([unit, total]) => (
-              <div key={unit} className="text-sm font-bold text-gray-800">
-                {total.toFixed(2)} {unit}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

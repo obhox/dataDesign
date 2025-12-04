@@ -30,7 +30,7 @@ export function PartEditor({
 }: PartEditorProps) {
   return (
     <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 bg-white rounded-xl shadow-2xl p-6 w-96 border border-gray-200 max-h-[80vh] overflow-y-auto">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Edit Part</h3>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Edit Component</h3>
       <div className="space-y-3">
         <div>
           <label className="text-xs font-semibold text-gray-600 block mb-1">NAME</label>
@@ -39,16 +39,6 @@ export function PartEditor({
             value={part.name}
             onChange={(e) => onUpdateProperty(part.id, "name", e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-gray-600 block mb-1">QUANTITY</label>
-          <input
-            type="number"
-            value={part.quantity || 1}
-            onChange={(e) => onUpdateProperty(part.id, "quantity", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            min="1"
           />
         </div>
         <div>
@@ -61,52 +51,44 @@ export function PartEditor({
           />
         </div>
         <div>
-          <label className="text-xs font-semibold text-gray-600 block mb-2">COST</label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="0.00"
-              value={part.cost || ""}
-              onChange={(e) => onUpdateProperty(part.id, "cost", e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              step="0.01"
-              min="0"
-            />
-            <select
-              value={part.costUnit || "USD"}
-              onChange={(e) => onUpdateProperty(part.id, "costUnit", e.target.value)}
-              className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="NGN">NGN</option>
-            </select>
-          </div>
+          <label className="text-xs font-semibold text-gray-600 block mb-1">TECHNOLOGY</label>
+          <input
+            type="text"
+            value={part.technology || ""}
+            onChange={(e) => onUpdateProperty(part.id, "technology", e.target.value)}
+            placeholder="e.g., PostgreSQL 15, Node.js 20"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
         <div>
-          <label className="text-xs font-semibold text-gray-600 block mb-2">SOURCE LINK</label>
-          <div className="flex gap-2">
-            <input
-              type="url"
-              placeholder="https://example.com/part"
-              value={part.sourceUrl || ""}
-              onChange={(e) => onUpdateProperty(part.id, "sourceUrl", e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            />
-            {part.sourceUrl && (
-              <a
-                href={part.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1"
-                title="Open link"
-              >
-                <ExternalLink size={16} />
-              </a>
-            )}
-          </div>
-          <div className="text-xs text-gray-500 mt-1">Link to purchase or view part details</div>
+          <label className="text-xs font-semibold text-gray-600 block mb-1">VERSION</label>
+          <input
+            type="text"
+            value={part.version || ""}
+            onChange={(e) => onUpdateProperty(part.id, "version", e.target.value)}
+            placeholder="e.g., v2.1.0"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-semibold text-gray-600 block mb-1">CAPACITY / THROUGHPUT</label>
+          <input
+            type="text"
+            value={part.capacity || ""}
+            onChange={(e) => onUpdateProperty(part.id, "capacity", e.target.value)}
+            placeholder="e.g., 1000 req/s, 100GB storage"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-semibold text-gray-600 block mb-1">SLA (OPTIONAL)</label>
+          <input
+            type="text"
+            value={part.sla || ""}
+            onChange={(e) => onUpdateProperty(part.id, "sla", e.target.value)}
+            placeholder="e.g., 99.9% uptime"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
         <div>
           <label className="text-xs font-semibold text-gray-600 block mb-2">COLOR</label>

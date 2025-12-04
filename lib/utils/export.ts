@@ -12,39 +12,57 @@ export function exportAsJSON(
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = "prototyping-mindmap.json"
+  a.download = "system-design.json"
   a.click()
   URL.revokeObjectURL(url)
 }
 
-export function exportBOM(parts: Part[]) {
-  let csv = "Part Name,Quantity,Unit Cost,Currency,Total Cost,Functionality,Source Link\n"
-  parts.forEach((part) => {
-    const quantity = part.quantity || 1
-    const cost = Number.parseFloat(part.cost) || 0
-    const total = (quantity * cost).toFixed(2)
-    csv += `"${part.name}",${quantity},${cost},${part.costUnit || "USD"},${total},"${part.functionality || ""}","${part.sourceUrl || ""}"\n`
+export function exportArchitectureDoc(parts: Part[], connections: Connection[]) {
+  let markdown = "# System Architecture Documentation\n\n"
+  markdown += `_Generated on ${new Date().toLocaleDateString()}_\n\n`
+
+  markdown += "## Overview\n\n"
+  markdown += `This system consists of ${parts.length} components connected through ${connections.length} data flows.\n\n`
+
+  markdown += "## Components\n\n"
+  parts.forEach(part => {
+    markdown += `### ${part.name}\n\n`
+    markdown += `- **Type**: ${part.type}\n`
+    if (part.technology) markdown += `- **Technology**: ${part.technology}\n`
+    if (part.version) markdown += `- **Version**: ${part.version}\n`
+    markdown += `- **Functionality**: ${part.functionality}\n`
+    if (part.capacity) markdown += `- **Capacity**: ${part.capacity}\n`
+    if (part.sla) markdown += `- **SLA**: ${part.sla}\n`
+    markdown += `\n`
   })
-  const blob = new Blob([csv], { type: "text/csv" })
+
+  markdown += "## Data Flows\n\n"
+  const groupedConnections = connections.reduce((acc, conn) => {
+    if (!acc[conn.linkType]) acc[conn.linkType] = []
+    acc[conn.linkType].push(conn)
+    return acc
+  }, {} as Record<string, Connection[]>)
+
+  Object.entries(groupedConnections).forEach(([type, conns]) => {
+    markdown += `### ${type.charAt(0).toUpperCase() + type.slice(1).replace(/-/g, ' ')}\n\n`
+    conns.forEach(conn => {
+      const from = parts.find(p => p.id === conn.from)
+      const to = parts.find(p => p.id === conn.to)
+      markdown += `- **${from?.name}** → **${to?.name}**\n`
+    })
+    markdown += `\n`
+  })
+
+  markdown += "## Architecture Diagram\n\n"
+  markdown += "_Import the JSON file to visualize this architecture in Flow._\n\n"
+
+  const blob = new Blob([markdown], { type: "text/markdown" })
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = "bill-of-materials.csv"
+  a.download = "architecture-documentation.md"
   a.click()
   URL.revokeObjectURL(url)
-}
-
-export function calculateTotalCost(parts: Part[]): Record<string, number> {
-  const costsByUnit: Record<string, number> = {}
-  parts.forEach((part) => {
-    if (part.cost && !isNaN(Number.parseFloat(part.cost))) {
-      const unit = part.costUnit || "USD"
-      const quantity = Number.parseInt(part.quantity.toString()) || 1
-      if (!costsByUnit[unit]) costsByUnit[unit] = 0
-      costsByUnit[unit] += Number.parseFloat(part.cost) * quantity
-    }
-  })
-  return costsByUnit
 }
 
 export async function exportCanvasAsImage(format: 'png' | 'jpeg' = 'png') {
@@ -63,7 +81,7 @@ export async function exportCanvasAsImage(format: 'png' | 'jpeg' = 'png') {
 
     // Create a temporary watermark element
     const watermark = document.createElement('div')
-    watermark.textContent = 'Made with Flow by Obhox Systems'
+    watermark.textContent = 'Made with Flow System Designer by Obhox Systems'
     watermark.style.cssText = `
       position: absolute;
       bottom: 12px;
@@ -117,7 +135,7 @@ export async function exportCanvasAsImage(format: 'png' | 'jpeg' = 'png') {
     // Create download link
     const link = document.createElement('a')
     // Simple, consistent filename as requested
-    const filename = `flow-prototype.${format}`
+    const filename = `system-architecture.${format}`
     link.download = filename
     link.href = dataUrl
     link.click()

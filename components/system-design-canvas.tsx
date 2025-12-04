@@ -7,14 +7,14 @@ import { Wrench } from "lucide-react"
 import { ReactFlowProvider } from "@xyflow/react"
 import type { Part, Connection, LinkType, Component, HistoryState } from "@/lib/types"
 import { LINK_TYPES, SAMPLE_DATA } from "@/lib/constants"
-import { exportAsJSON, exportBOM } from "@/lib/utils/export"
+import { exportAsJSON, exportArchitectureDoc } from "@/lib/utils/export"
 import { Toolbar } from "./toolbar"
 import { Canvas } from "./canvas"
 import { ComponentLibrary } from "./component-library"
 import { LinkTypeSelector } from "./link-type-selector"
 import { PartEditor } from "./part-editor"
 
-export default function PrototypingMindMap() {
+export default function SystemDesignCanvas() {
   const [parts, setParts] = useState<Part[]>([])
   const [connections, setConnections] = useState<Connection[]>([])
   const [selectedPart, setSelectedPart] = useState<Part | null>(null)
@@ -228,40 +228,40 @@ export default function PrototypingMindMap() {
     if (arrangementMode === 'hierarchical') {
       // Hierarchical arrangement - optimized for connection visualization
       const connectionCounts = new Map<string, number>()
-      
+
       // Count connections for each part
       parts.forEach(part => {
-        const count = connections.filter(conn => 
+        const count = connections.filter(conn =>
           conn.from === part.id || conn.to === part.id
         ).length
         connectionCounts.set(part.id.toString(), count)
       })
-      
+
       // Sort parts by connection count (most connected first)
-      const sortedParts = [...parts].sort((a, b) => 
+      const sortedParts = [...parts].sort((a, b) =>
         (connectionCounts.get(b.id.toString()) || 0) - (connectionCounts.get(a.id.toString()) || 0)
       )
-      
+
       // Create hierarchical layout
       const levels = Math.ceil(Math.sqrt(parts.length))
       const levelHeight = 250
       const startY = 100
       const centerX = 400
-      
+
       newParts = sortedParts.map((part, index) => {
         const level = Math.floor(index / levels)
         const positionInLevel = index % levels
         const levelWidth = Math.min(levels, sortedParts.length - level * levels)
         const spacing = Math.max(200, 800 / levelWidth)
         const startX = centerX - (levelWidth - 1) * spacing / 2
-        
+
         return {
           ...part,
           x: startX + positionInLevel * spacing,
           y: startY + level * levelHeight,
         }
       })
-      
+
       // Switch to spatial mode for next click
       setArrangementMode('spatial')
     } else if (arrangementMode === 'spatial') {
@@ -269,19 +269,19 @@ export default function PrototypingMindMap() {
       const centerX = 400
       const centerY = 300
       const radius = Math.max(150, parts.length * 20) // Dynamic radius based on part count
-      
+
       newParts = parts.map((part, index) => {
         const angle = (index / parts.length) * 2 * Math.PI
         const x = centerX + radius * Math.cos(angle)
         const y = centerY + radius * Math.sin(angle)
-        
+
         return {
           ...part,
           x,
           y,
         }
       })
-      
+
       // Switch to grid mode for next click
       setArrangementMode('grid')
     } else {
@@ -294,14 +294,14 @@ export default function PrototypingMindMap() {
       newParts = parts.map((part, index) => {
         const row = Math.floor(index / gridSize)
         const col = index % gridSize
-        
+
         return {
           ...part,
           x: startX + col * spacing,
           y: startY + row * spacing,
         }
       })
-      
+
       // Switch to hierarchical mode for next click
       setArrangementMode('hierarchical')
     }
@@ -321,7 +321,7 @@ export default function PrototypingMindMap() {
           canRedo={historyIndex < history.length - 1}
           onExportJSON={() => exportAsJSON(parts, connections, customLinkTypes, customComponents)}
           onImportJSON={importFromJSON}
-          onExportBOM={() => exportBOM(parts)}
+          onExportBOM={() => exportArchitectureDoc(parts, connections)}
           onAutoArrange={autoArrangeParts}
           parts={parts}
         />

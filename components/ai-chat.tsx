@@ -27,9 +27,9 @@ interface AIChatProps {
 }
 
 const QUICK_ACTIONS = [
-  { id: 'analyze', label: 'Analyze Workflow', icon: BarChart3, category: 'analysis' },
-  { id: 'suggest', label: 'Suggest Parts', icon: Lightbulb, category: 'suggestion' },
-  { id: 'optimize', label: 'Optimize Process', icon: Wrench, category: 'suggestion' },
+  { id: 'analyze', label: 'Analyze Architecture', icon: BarChart3, category: 'analysis' },
+  { id: 'suggest', label: 'Suggest Components', icon: Lightbulb, category: 'suggestion' },
+  { id: 'optimize', label: 'Optimize Design', icon: Wrench, category: 'suggestion' },
   { id: 'troubleshoot', label: 'Troubleshoot', icon: AlertTriangle, category: 'troubleshooting' },
 ]
 
@@ -38,7 +38,7 @@ export function AIChat({ parts, connections, onSuggestionApply, onAIResult }: AI
     {
       id: '1',
       type: 'ai',
-      content: 'Hello! I\'m your AI prototyping assistant. I can help you analyze your workflow, suggest improvements, recommend parts, and troubleshoot issues. How can I assist you today?',
+      content: 'Hello! I\'m your AI system architecture assistant. I can help you design scalable systems, analyze data flows, recommend components, and troubleshoot architectural issues. How can I assist you today?',
       timestamp: new Date(),
       category: 'general'
     }
@@ -141,16 +141,16 @@ export function AIChat({ parts, connections, onSuggestionApply, onAIResult }: AI
     let message = ''
     switch (action.id) {
       case 'analyze':
-        message = 'Please analyze my current prototyping workflow and provide efficiency insights.'
+        message = 'Please analyze my current system architecture and provide insights on scalability and reliability.'
         break
       case 'suggest':
-        message = 'Can you suggest additional parts that would complement my current prototyping system?'
+        message = 'Can you suggest additional components that would complement my current system design?'
         break
       case 'optimize':
-        message = 'How can I optimize my prototyping process for better efficiency?'
+        message = 'How can I optimize this architecture for better performance and scalability?'
         break
       case 'troubleshoot':
-        message = 'I\'m experiencing issues with my prototyping process. Can you help troubleshoot?'
+        message = 'I\'m experiencing issues with my system architecture. Can you help troubleshoot?'
         break
     }
     sendMessage(message, action.category, false) // Don't show popup for quick actions
@@ -179,7 +179,7 @@ export function AIChat({ parts, connections, onSuggestionApply, onAIResult }: AI
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
           <Bot className="h-5 w-5" />
-          AI Prototyping Assistant
+          AI Architecture Assistant
         </CardTitle>
       </CardHeader>
       
@@ -279,7 +279,7 @@ export function AIChat({ parts, connections, onSuggestionApply, onAIResult }: AI
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about prototyping processes, parts, or optimizations..."
+            placeholder="Ask about system architecture, data flows, scalability, or components..."
             onKeyPress={(e) => e.key === 'Enter' && sendMessage(input)}
             disabled={isLoading}
             className="flex-1"

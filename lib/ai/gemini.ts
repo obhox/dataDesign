@@ -8,23 +8,23 @@ export class GeminiAIService {
   private model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
 
   /**
-   * Generate prototyping process suggestions based on parts and connections
+   * Generate system architecture process suggestions based on components and connections
    */
   async generateProcessSuggestions(parts: Part[], connections: Connection[]): Promise<string> {
     const prompt = `
-      As a prototyping expert, analyze the following prototyping system:
-      
-      Parts: ${JSON.stringify(parts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality })), null, 2)}
-      
-      Connections: ${JSON.stringify(connections.map(c => ({ from: c.from, to: c.to, linkType: c.linkType })), null, 2)}
-      
+      As a system architecture expert, analyze the following system design:
+
+      Components: ${JSON.stringify(parts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality, technology: p.technology, capacity: p.capacity })), null, 2)}
+
+      Data Flows: ${JSON.stringify(connections.map(c => ({ from: c.from, to: c.to, linkType: c.linkType })), null, 2)}
+
       Please provide:
-      1. Prototype optimization suggestions
-      2. Potential design issues or bottlenecks
-      3. Recommended improvements for rapid iteration
-      4. Testing and validation checkpoints
-      
-      Keep the response concise and actionable for prototyping workflows.
+      1. Architecture optimization suggestions
+      2. Potential scalability bottlenecks or single points of failure
+      3. Recommended improvements for reliability and performance
+      4. Security and compliance considerations
+
+      Keep the response concise and actionable for production systems.
     `;
 
     try {
@@ -58,22 +58,22 @@ export class GeminiAIService {
   }
 
   /**
-   * Generate part recommendations based on existing parts
+   * Generate component recommendations based on existing components
    */
   async generatePartRecommendations(existingParts: Part[], context?: string): Promise<string> {
     const prompt = `
-      Based on the following existing prototyping parts:
-      ${JSON.stringify(existingParts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality })), null, 2)}
-      
+      Based on the following existing system components:
+      ${JSON.stringify(existingParts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality, technology: p.technology })), null, 2)}
+
       ${context ? `Additional context: ${context}` : ''}
-      
-      Suggest additional parts that would complement this prototyping system. Include:
-      1. Part name and type
-      2. How it integrates with existing parts
-      3. Benefits it would provide for rapid prototyping
-      4. Estimated cost impact (low/medium/high)
-      
-      Focus on practical, commonly used prototyping components and rapid iteration tools.
+
+      Suggest additional components that would complement this system architecture. Include:
+      1. Component name and type
+      2. How it integrates with existing components
+      3. Benefits it would provide for scalability, reliability, or performance
+      4. Typical capacity/throughput expectations
+
+      Focus on practical, production-ready components and cloud-native patterns.
     `;
 
     try {
@@ -87,24 +87,24 @@ export class GeminiAIService {
   }
 
   /**
-   * Analyze prototyping workflow efficiency
+   * Analyze system architecture efficiency
    */
   async analyzeWorkflowEfficiency(parts: Part[], connections: Connection[]): Promise<string> {
     const prompt = `
-      Analyze the efficiency of this prototyping workflow:
-      
-      Parts: ${JSON.stringify(parts.map(p => ({ name: p.name, type: p.type, x: p.x, y: p.y })), null, 2)}
-      
+      Analyze the architecture of this system:
+
+      Components: ${JSON.stringify(parts.map(p => ({ name: p.name, type: p.type, technology: p.technology, capacity: p.capacity, x: p.x, y: p.y })), null, 2)}
+
       Connections: ${JSON.stringify(connections, null, 2)}
-      
+
       Provide analysis on:
-      1. Prototyping efficiency score (1-10)
-      2. Design flow optimization
-      3. Potential rapid iteration opportunities
-      4. Resource utilization improvements
-      5. Lean prototyping principles application
-      
-      Be specific and provide actionable insights for faster prototyping cycles.
+      1. System design score (1-10) based on scalability, reliability, and maintainability
+      2. Data flow optimization opportunities
+      3. Potential performance bottlenecks
+      4. High availability and disaster recovery considerations
+      5. Adherence to cloud architecture best practices
+
+      Be specific and provide actionable insights for production systems.
     `;
 
     try {
@@ -118,21 +118,21 @@ export class GeminiAIService {
   }
 
   /**
-   * Generate troubleshooting suggestions for prototyping issues
+   * Generate troubleshooting suggestions for system architecture issues
    */
   async generateTroubleshootingSuggestions(issue: string, relevantParts: Part[]): Promise<string> {
     const prompt = `
-      Prototyping Issue: ${issue}
-      
-      Relevant Parts: ${JSON.stringify(relevantParts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality })), null, 2)}
-      
+      System Architecture Issue: ${issue}
+
+      Relevant Components: ${JSON.stringify(relevantParts.map(p => ({ name: p.name, type: p.type, functionality: p.functionality, technology: p.technology, capacity: p.capacity })), null, 2)}
+
       Provide troubleshooting suggestions including:
-      1. Possible root causes in the prototype design
+      1. Possible root causes in the architecture
       2. Step-by-step diagnostic procedures
-      3. Quick fixes and workarounds for rapid iteration
-      4. When to redesign vs. patch the prototype
-      
-      Focus on practical, fast solutions that maintain prototyping velocity.
+      3. Quick fixes and workarounds for immediate mitigation
+      4. Long-term architectural improvements to prevent recurrence
+
+      Focus on practical, production-ready solutions that maintain system reliability.
     `;
 
     try {
@@ -150,40 +150,37 @@ export class GeminiAIService {
    */
   async generateDesign(requirements: string, designType?: string): Promise<{ parts: Partial<Part>[], connections: Partial<Connection>[], description: string, customLinkTypes?: LinkType[] }> {
     const prompt = `
-      You are a prototyping design assistant. Your task is to generate a complete design based on the requirements.
-      
+      You are a system architecture assistant. Your task is to generate a complete system design based on the requirements.
+
       Design Requirements: ${requirements}
-      Design Type: ${designType || 'general prototype'}
-      
+      Design Type: ${designType || 'general system architecture'}
+
       CRITICAL: You MUST respond with ONLY a valid JSON object. No explanations, no markdown, no code blocks, no additional text - JUST JSON.
+
+      Generate a complete system architecture that includes:
       
-      Generate a complete prototyping design that includes:
-      
-      1. A list of parts with the following structure for each part:
+      1. A list of components with the following structure for each:
          - name: descriptive name
-         - type: category (e.g., "Sensor", "Actuator", "Controller", "Display", "Power", "Mechanical")
-         - functionality: what this part does in the design
-         - cost: estimated cost as a number
-         - costUnit: "USD" or other currency
-         - quantity: number of units needed
-         - customColor: hex color code based on part type (Sensor: "#10B981", Controller: "#3B82F6", Display: "#8B5CF6", Power: "#F59E0B", Actuator: "#EF4444", Mechanical: "#6B7280")
-         - x: x-coordinate for positioning (between 100-800)
-         - y: y-coordinate for positioning (between 100-600)
+         - type: category (e.g., "postgresql", "rest-api", "kafka", "microservice", "redis", "etl-pipeline", "mongodb", "lambda", "api-gateway")
+         - functionality: what this component does in the system
+         - technology: specific technology used (e.g., "PostgreSQL 15", "Node.js 20", "Kafka 3.4")
+         - version: version number (e.g., "v2.1.0")
+         - capacity: throughput or storage capacity (e.g., "1000 req/s", "100GB storage")
+         - customColor: hex color code based on component type
+         - x: x-coordinate for positioning (between 100-1200)
+         - y: y-coordinate for positioning (between 100-800)
       
-      2. A list of connections between parts. You can use predefined link types OR create custom ones:
-         
+      2. A list of connections between components. You can use predefined link types OR create custom ones:
+
          PREDEFINED LINK TYPES (recommended for common connections):
-         - "assembly": Physical assembly connection (color: "#3b82f6", strokeWidth: 2, dashArray: "")
-         - "power": Electrical power connection (color: "#eab308", strokeWidth: 3, dashArray: "")
-         - "data": Data/signal flow connection (color: "#8b5cf6", strokeWidth: 2, dashArray: "5,5")
-         - "material": Material flow connection (color: "#10b981", strokeWidth: 2, dashArray: "")
-         - "dependency": Dependency relationship (color: "#ef4444", strokeWidth: 2, dashArray: "10,5")
-         - "sequence": Sequential order connection (color: "#06b6d4", strokeWidth: 2, dashArray: "")
+         - "data-flow": Synchronous data transfer (color: "#3b82f6", strokeWidth: 2, dashArray: "")
+         - "async-flow": Asynchronous/event-driven communication (color: "#8b5cf6", strokeWidth: 2, dashArray: "5,5")
+         - "dependency": Service dependency (color: "#ef4444", strokeWidth: 2, dashArray: "10,5")
          
-         CUSTOM LINK TYPES (create when needed for specific connections):
-         You can create custom link types by choosing appropriate:
-         - linkType: descriptive name (e.g., "thermal", "optical", "hydraulic", "wireless", "mechanical")
-         - color: hex color that represents the connection type
+         CUSTOM LINK TYPES (create when needed for specific protocols):
+         You can create custom link types for specific protocols:
+         - linkType: descriptive name (e.g., "http", "grpc", "websocket", "graphql", "message-queue")
+         - color: hex color that represents the protocol
          - strokeWidth: 1-4 (thicker for more important connections)
          - dashArray: "" for solid, "5,5" for dashed, "2,3" for dotted, "10,5" for long dashes
          
@@ -201,24 +198,24 @@ export class GeminiAIService {
        {
          "parts": [
             {
-              "name": "Arduino Uno Controller",
-              "type": "Controller",
-              "functionality": "Main microcontroller for system control",
-              "cost": 25.99,
-              "costUnit": "USD",
-              "quantity": 1,
-              "customColor": "#3B82F6",
+              "name": "API Gateway",
+              "type": "api-gateway",
+              "functionality": "Routes requests to microservices",
+              "technology": "Kong",
+              "version": "v3.0",
+              "capacity": "50000 req/s",
+              "customColor": "#FF4F00",
               "x": 200,
               "y": 150
             },
             {
-              "name": "Temperature Sensor",
-              "type": "Sensor",
-              "functionality": "Measures ambient temperature",
-              "cost": 12.50,
-              "costUnit": "USD",
-              "quantity": 1,
-              "customColor": "#10B981",
+              "name": "User Service",
+              "type": "microservice",
+              "functionality": "Manages user accounts",
+              "technology": "Node.js",
+              "version": "v1.0.0",
+              "capacity": "5000 req/s",
+              "customColor": "#FF6B6B",
               "x": 400,
               "y": 150
             }
@@ -227,29 +224,27 @@ export class GeminiAIService {
             {
               "from": 0,
               "to": 1,
-              "linkType": "data",
-              "color": "#8b5cf6",
+              "linkType": "data-flow",
+              "color": "#3b82f6",
               "strokeWidth": 2,
-              "dashArray": "5,5"
+              "dashArray": ""
             }
           ],
-         "description": "A simple temperature monitoring system with Arduino controller and sensor"
+         "description": "A microservices architecture with API gateway routing"
        }
        
-       REQUIREMENTS: 
-        - Use 0-based indices for connections (first part is index 0, second is index 1, etc.)
-        - Ensure every connection references valid part indices
+       REQUIREMENTS:
+        - Use 0-based indices for connections (first component is index 0, second is index 1, etc.)
+        - Ensure every connection references valid component indices
         - Use ONLY the exact linkType values provided above
         - Use the exact color, strokeWidth, and dashArray for each linkType
         - Create meaningful connections that make logical sense:
-          * "assembly" for physical mounting/attachment
-          * "power" for electrical power supply
-          * "data" for control signals and sensor data
-          * "material" for fluid/material flow
-          * "dependency" for functional dependencies
-          * "sequence" for ordered operations
-        - Position parts logically with adequate spacing (minimum 150px apart)
-        - Use appropriate colors for each part type
+          * "data-flow" for synchronous API calls and database queries
+          * "async-flow" for event-driven communication and message queues
+          * "dependency" for service dependencies
+        - Use system design best practices (separation of concerns, scalability, reliability)
+        - Position components logically with adequate spacing (minimum 150px apart)
+        - Create meaningful data flows that reflect real-world architectures
         - OUTPUT ONLY JSON - NO MARKDOWN, NO EXPLANATIONS, NO CODE BLOCKS
      `;
 
@@ -330,22 +325,22 @@ export class GeminiAIService {
    * Edit an existing design based on modification request
    */
   async editDesign(
-    modificationRequest: string, 
-    currentParts: Part[], 
+    modificationRequest: string,
+    currentParts: Part[],
     currentConnections: Connection[]
   ): Promise<{ parts: Partial<Part>[], connections: Partial<Connection>[], description: string, customLinkTypes?: LinkType[] }> {
     const prompt = `
-      You are a prototyping design assistant. Your task is to modify an existing design based on the user's request.
-      
+      You are a system architecture assistant. Your task is to modify an existing design based on the user's request.
+
       CURRENT DESIGN:
-      Parts: ${JSON.stringify(currentParts.map(p => ({ 
-        id: p.id, 
-        name: p.name, 
-        type: p.type, 
+      Components: ${JSON.stringify(currentParts.map(p => ({
+        id: p.id,
+        name: p.name,
+        type: p.type,
         functionality: p.functionality,
-        cost: p.cost,
-        costUnit: p.costUnit,
-        quantity: p.quantity,
+        technology: p.technology,
+        version: p.version,
+        capacity: p.capacity,
         x: p.x,
         y: p.y
       })), null, 2)}
@@ -365,18 +360,18 @@ export class GeminiAIService {
       CRITICAL: You MUST respond with ONLY a valid JSON object. No explanations, no markdown, no code blocks, no additional text - JUST JSON.
       
       Based on the modification request, generate the COMPLETE updated design. This should include:
-      
-      1. ALL parts (modified, new, and unchanged) with the following structure:
-         - id: keep existing IDs for unchanged parts, use new sequential IDs for new parts
+
+      1. ALL components (modified, new, and unchanged) with the following structure:
+         - id: keep existing IDs for unchanged components, use new sequential IDs for new components
          - name: descriptive name
-         - type: category (e.g., "Sensor", "Actuator", "Controller", "Display", "Power", "Mechanical")
-         - functionality: what this part does in the design
-         - cost: estimated cost as a number
-         - costUnit: "USD" or other currency
-         - quantity: number of units needed
-         - customColor: hex color code based on part type (Sensor: "#10B981", Controller: "#3B82F6", Display: "#8B5CF6", Power: "#F59E0B", Actuator: "#EF4444", Mechanical: "#6B7280")
-         - x: x-coordinate for positioning (between 100-800)
-         - y: y-coordinate for positioning (between 100-600)
+         - type: category (e.g., "postgresql", "rest-api", "kafka", "microservice", "redis", "etl-pipeline")
+         - functionality: what this component does in the system
+         - technology: specific technology used (e.g., "PostgreSQL 15", "Node.js 20")
+         - version: version number (e.g., "v2.1.0")
+         - capacity: throughput or storage capacity (e.g., "1000 req/s", "100GB storage")
+         - customColor: hex color code based on component type
+         - x: x-coordinate for positioning (between 100-1200)
+         - y: y-coordinate for positioning (between 100-800)
       
       2. ALL connections (modified, new, and unchanged). You can use predefined link types OR create custom ones:
          
@@ -388,10 +383,10 @@ export class GeminiAIService {
          - "dependency": Dependency relationship (color: "#ef4444", strokeWidth: 2, dashArray: "10,5")
          - "sequence": Sequential order connection (color: "#06b6d4", strokeWidth: 2, dashArray: "")
          
-         CUSTOM LINK TYPES (create when needed for specific connections):
-         You can create custom link types by choosing appropriate:
-         - linkType: descriptive name (e.g., "thermal", "optical", "hydraulic", "wireless", "mechanical")
-         - color: hex color that represents the connection type
+         CUSTOM LINK TYPES (create when needed for specific protocols):
+         You can create custom link types for specific protocols:
+         - linkType: descriptive name (e.g., "http", "grpc", "websocket", "graphql", "message-queue")
+         - color: hex color that represents the protocol
          - strokeWidth: 1-4 (thicker for more important connections)
          - dashArray: "" for solid, "5,5" for dashed, "2,3" for dotted, "10,5" for long dashes
          
@@ -408,24 +403,25 @@ export class GeminiAIService {
        
        IMPORTANT RULES:
        - If the request is to replace a component, remove the old one and add the new one in a similar position
-       - If the request is to add components, keep all existing parts and add new ones
+       - If the request is to add components, keep all existing components and add new ones
        - If the request is to remove components, exclude them from the output
-       - Maintain logical connections - update connection endpoints if parts are replaced
-       - Preserve unchanged parts with their original IDs and positions
+       - Maintain logical data flows - update connection endpoints if components are replaced
+       - Preserve unchanged components with their original IDs and positions
        - Use appropriate positioning to avoid overlaps
+       - Follow system design best practices and architectural patterns
        
        RESPOND WITH ONLY THIS JSON FORMAT - NO OTHER TEXT:
        {
          "parts": [
             {
               "id": 1,
-              "name": "Arduino Uno Controller",
-              "type": "Controller",
-              "functionality": "Main microcontroller for system control",
-              "cost": 25.99,
-              "costUnit": "USD",
-              "quantity": 1,
-              "customColor": "#3B82F6",
+              "name": "API Gateway",
+              "type": "api-gateway",
+              "functionality": "Routes requests to microservices",
+              "technology": "Kong",
+              "version": "v3.0",
+              "capacity": "50000 req/s",
+              "customColor": "#FF4F00",
               "x": 200,
               "y": 150
             }
@@ -435,10 +431,10 @@ export class GeminiAIService {
               "id": 1,
               "from": 1,
               "to": 2,
-              "linkType": "data",
-              "color": "#8b5cf6",
+              "linkType": "data-flow",
+              "color": "#3b82f6",
               "strokeWidth": 2,
-              "dashArray": "5,5"
+              "dashArray": ""
             }
           ],
          "description": "Updated design based on modification request"
@@ -504,50 +500,50 @@ export class GeminiAIService {
   }
 
   /**
-   * Generate general prototyping advice
+   * Generate general system architecture advice
    */
   async generatePrototypingAdvice(query: string, context?: { parts: Part[], connections: Connection[] }): Promise<string> {
     const contextInfo = context && context.parts.length > 0 ? `
       Current Design Context:
-      
-      Parts in your design (${context.parts.length} total):
-      ${JSON.stringify(context.parts.map(p => ({ 
-        name: p.name, 
-        type: p.type, 
+
+      Components in your design (${context.parts.length} total):
+      ${JSON.stringify(context.parts.map(p => ({
+        name: p.name,
+        type: p.type,
         functionality: p.functionality,
-        cost: p.cost,
-        costUnit: p.costUnit,
-        quantity: p.quantity
+        technology: p.technology,
+        version: p.version,
+        capacity: p.capacity
       })), null, 2)}
-      
+
       Connections in your design (${context.connections.length} total):
-      ${JSON.stringify(context.connections.map(c => ({ 
-        from: c.from, 
-        to: c.to, 
-        linkType: c.linkType 
+      ${JSON.stringify(context.connections.map(c => ({
+        from: c.from,
+        to: c.to,
+        linkType: c.linkType
       })), null, 2)}
-      
+
       Design Summary:
-      - Total parts: ${context.parts.length}
+      - Total components: ${context.parts.length}
       - Total connections: ${context.connections.length}
-      - Part types: ${[...new Set(context.parts.map(p => p.type))].join(', ')}
+      - Component types: ${[...new Set(context.parts.map(p => p.type))].join(', ')}
       - Connection types: ${[...new Set(context.connections.map(c => c.linkType))].join(', ')}
-    ` : 'No current design loaded. Providing general prototyping advice.';
+    ` : 'No current design loaded. Providing general system architecture advice.';
 
     const prompt = `
       User Question: ${query}
-      
+
       ${contextInfo}
-      
-      As a prototyping expert, provide helpful, accurate, and practical advice based on the user's current design context. 
-      
+
+      As a system architecture expert, provide helpful, accurate, and practical advice based on the user's current design context.
+
       When responding:
-      1. Reference specific parts and connections from their design when relevant
+      1. Reference specific components and connections from their design when relevant
       2. Suggest improvements or optimizations based on their current setup
-      3. Provide cost-effective solutions considering their existing components
-      4. Focus on rapid iteration best practices and design thinking principles
-      5. If they have no design loaded, provide general prototyping guidance
-      
+      3. Provide scalable and reliable solutions considering their existing components
+      4. Focus on cloud architecture best practices and modern system design patterns
+      5. If they have no design loaded, provide general architecture guidance
+
       Make your response conversational and directly relevant to their specific design situation.
     `;
 

@@ -8,8 +8,8 @@ import { Suspense } from "react"
 import ScreenSizeDetector from "@/components/screen-size-detector"
 
 export const metadata: Metadata = {
-  title: "Flow by Obhox Systems",
-  description: "Interactive prototyping component visualization and BOM management tool",
+  title: "Flow by Obhox Systems - System Design Canvas",
+  description: "Interactive system architecture and data flow visualization tool with AI-powered design assistance",
 }
 
 export default function RootLayout({
