@@ -8,7 +8,7 @@ import { Suspense } from "react"
 import ScreenSizeDetector from "@/components/screen-size-detector"
 
 export const metadata: Metadata = {
-  title: "Flow by Obhox Systems - System Design Canvas",
+  title: "dataDesign - System Design Canvas",
   description: "Interactive system architecture and data flow visualization tool with AI-powered design assistance",
 }
 

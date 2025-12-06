@@ -1,6 +1,6 @@
-# Flow by Obhox Systems - AI-Powered System Design Canvas
+# dataDesign - AI-Powered System Design Canvas
 
-An intelligent, interactive system architecture and data flow visualization tool built with Next.js and React Flow. Flow combines visual design capabilities with AI-powered assistance to streamline system design and architecture planning.
+An intelligent, interactive system architecture and data flow visualization tool built with Next.js and React Flow. dataDesign combines visual design capabilities with AI-powered assistance to streamline system design and architecture planning.
 
 ## ✨ Key Features
 
@@ -51,9 +51,9 @@ An intelligent, interactive system architecture and data flow visualization tool
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/obhox/flow.git
-   cd flow
-   ```
+   git clone https://github.com/obhox/dataDesign.git
+  cd dataDesign
+  ```
 
 2. **Install dependencies**
    ```bash
@@ -100,7 +100,7 @@ An intelligent, interactive system architecture and data flow visualization tool
 
 ### AI-Powered Architecture Generation
 
-Flow's AI capabilities allow you to design systems using natural language:
+dataDesign's AI capabilities allow you to design systems using natural language:
 
 - **Generate New Architectures**: Type "Generate a microservices architecture for an e-commerce platform" or "Create a data pipeline for analytics"
 - **Modify Existing Designs**: Say "Add a Redis cache layer" or "Replace PostgreSQL with MongoDB"
@@ -138,7 +138,7 @@ Total system: 10 components with defined capacity and SLA specifications.
 ## 📁 Project Structure
 
 ```
-flow/
+dataDesign/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API routes
 │   │   └── ai/           # AI integration endpoints
@@ -202,7 +202,7 @@ The project uses Tailwind CSS with custom component styling. Modify `app/globals
 
 ## 🤝 Contributing
 
-We welcome contributions to Flow! Here's how you can help:
+We welcome contributions to dataDesign! Here's how you can help:
 
 ### Ways to Contribute
 
@@ -266,8 +266,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support & Community
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/obhox/flow/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/obhoxflow/discussions)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/obhox/dataDesign/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/obhox/dataDesign/discussions)
 - 📧 **Email**: hello@obhoxsystems.com
 - 🐦 **Twitter**: [@obhoxsys](https://twitter.com/obhoxsys)
 
@@ -282,7 +282,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Other Platforms
 
-Flow can be deployed on any platform that supports Next.js:
+dataDesign can be deployed on any platform that supports Next.js:
 - Netlify
 - Railway
 - Heroku
@@ -291,6 +291,6 @@ Flow can be deployed on any platform that supports Next.js:
 
 ---
 
-**Flow** - Streamlining system design and architecture planning with AI-powered intelligence.
+**dataDesign** - Streamlining system design and architecture planning with AI-powered intelligence.
 
 Made with ❤️ by Joy Oguntona

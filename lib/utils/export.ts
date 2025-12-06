@@ -54,7 +54,7 @@ export function exportArchitectureDoc(parts: Part[], connections: Connection[]) 
   })
 
   markdown += "## Architecture Diagram\n\n"
-  markdown += "_Import the JSON file to visualize this architecture in Flow._\n\n"
+  markdown += "_Import the JSON file to visualize this architecture in dataDesign._\n\n"
 
   const blob = new Blob([markdown], { type: "text/markdown" })
   const url = URL.createObjectURL(blob)
@@ -81,7 +81,7 @@ export async function exportCanvasAsImage(format: 'png' | 'jpeg' = 'png') {
 
     // Create a temporary watermark element
     const watermark = document.createElement('div')
-    watermark.textContent = 'Made with Flow System Designer by Obhox Systems'
+    watermark.textContent = 'Made with dataDesign'
     watermark.style.cssText = `
       position: absolute;
       bottom: 12px;

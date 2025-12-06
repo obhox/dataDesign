@@ -6,7 +6,6 @@ import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
 import { Send, Bot, User, Loader2, X, Wand2, Lightbulb } from 'lucide-react'
 
 import type { Part, Connection, LinkType } from '@/lib/types'
@@ -64,7 +63,7 @@ export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated 
       // Check if this is a design generation request
       const isDesignRequest = messageContent.toLowerCase().includes('generate') && 
                              (messageContent.toLowerCase().includes('design') || 
-                              messageContent.toLowerCase().includes('prototype') ||
+                              messageContent.toLowerCase().includes('build') ||
                               messageContent.toLowerCase().includes('create'))
 
       // Check if this is a design edit request
@@ -140,7 +139,7 @@ export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated 
         const friendlyMessage: Message = {
           id: (Date.now() + 1).toString(),
           type: 'ai',
-          content: 'Design generated successfully! Check the canvas to see your new prototype.',
+          content: 'Architecture generated successfully! Check the canvas to see your new architecture.',
           timestamp: new Date()
         }
 
