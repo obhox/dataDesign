@@ -29,7 +29,6 @@ export function exportArchitectureDoc(parts: Part[], connections: Connection[]) 
     markdown += `### ${part.name}\n\n`
     markdown += `- **Type**: ${part.type}\n`
     if (part.technology) markdown += `- **Technology**: ${part.technology}\n`
-    if (part.version) markdown += `- **Version**: ${part.version}\n`
     markdown += `- **Functionality**: ${part.functionality}\n`
     if (part.capacity) markdown += `- **Capacity**: ${part.capacity}\n`
     if (part.sla) markdown += `- **SLA**: ${part.sla}\n`

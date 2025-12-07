@@ -61,16 +61,6 @@ export function PartEditor({
           />
         </div>
         <div>
-          <label className="text-xs font-semibold text-gray-600 block mb-1">VERSION</label>
-          <input
-            type="text"
-            value={part.version || ""}
-            onChange={(e) => onUpdateProperty(part.id, "version", e.target.value)}
-            placeholder="e.g., v2.1.0"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
           <label className="text-xs font-semibold text-gray-600 block mb-1">CAPACITY / THROUGHPUT</label>
           <input
             type="text"
@@ -114,69 +104,6 @@ export function PartEditor({
               ))}
             </div>
           </div>
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-gray-600 block mb-2">IMAGE</label>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              placeholder="Image URL (optional)"
-              value={part.imageUrl || ""}
-              onChange={(e) => onUpdateProperty(part.id, "imageUrl", e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={onSearchImage}
-              disabled={searchingImage}
-              className="px-3 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-lg transition-colors disabled:bg-gray-400"
-              title="Search for image online"
-            >
-              <Search size={20} />
-            </button>
-          </div>
-          {part.imageUrl && (
-            <div className="mb-2">
-              <img
-                src={part.imageUrl || "/placeholder.svg"}
-                alt={part.name}
-                className="w-full h-32 object-cover rounded-lg border border-gray-200"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none"
-                }}
-              />
-            </div>
-          )}
-          {showImageResults && (
-            <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200 max-h-64 overflow-y-auto">
-              <div className="text-xs font-semibold text-gray-600 mb-2">
-                {searchingImage ? "Searching images..." : "Select an image:"}
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {imageResults.map((url, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => onSelectImage(url)}
-                    className="cursor-pointer border-2 border-gray-200 hover:border-blue-500 rounded-lg overflow-hidden transition-all"
-                  >
-                    <img
-                      src={url || "/placeholder.svg"}
-                      alt={`Option ${idx + 1}`}
-                      className="w-full h-24 object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = `https://via.placeholder.com/200x200/4A90E2/ffffff?text=Image`
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={onCancelImageSearch}
-                className="mt-2 text-xs text-gray-600 hover:text-gray-800 underline"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
         </div>
         <div className="flex gap-2 pt-2">
           <button onClick={onClose} className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-lg">
