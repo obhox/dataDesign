@@ -7,12 +7,13 @@ import { Wrench } from "lucide-react"
 import { ReactFlowProvider } from "@xyflow/react"
 import type { Part, Connection, LinkType, Component, HistoryState } from "@/lib/types"
 import { LINK_TYPES, SAMPLE_DATA } from "@/lib/constants"
-import { exportAsJSON, exportBOM } from "@/lib/utils/export"
+import { exportAsJSON, exportArchitectureDoc } from "@/lib/utils/export"
 import { Toolbar } from "./toolbar"
 import { Canvas } from "./canvas"
 import { ComponentLibrary } from "./component-library"
 import { LinkTypeSelector } from "./link-type-selector"
 import { PartEditor } from "./part-editor"
+import { SimpleChatBar } from "./simple-chat-bar"
 
 export default function PrototypingMindMap() {
   const [parts, setParts] = useState<Part[]>([])
@@ -220,6 +221,20 @@ export default function PrototypingMindMap() {
     setVisibleLinkTypes(newVisibleLinkTypes)
   }
 
+  const handleDesignGenerated = (newParts: Part[], newConnections: Connection[], newCustomLinkTypes?: LinkType[]) => {
+    setParts(newParts)
+    setConnections(newConnections)
+    if (newCustomLinkTypes && newCustomLinkTypes.length > 0) {
+      // Add new custom link types
+      newCustomLinkTypes.forEach(linkType => {
+        if (!customLinkTypes.find(existing => existing.id === linkType.id)) {
+          addCustomLinkType(linkType)
+        }
+      })
+    }
+    saveToHistory(newParts, newConnections)
+  }
+
   const autoArrangeParts = () => {
     if (parts.length === 0) return
 
@@ -321,7 +336,7 @@ export default function PrototypingMindMap() {
           canRedo={historyIndex < history.length - 1}
           onExportJSON={() => exportAsJSON(parts, connections, customLinkTypes, customComponents)}
           onImportJSON={importFromJSON}
-          onExportBOM={() => exportBOM(parts)}
+          onExportBOM={() => exportArchitectureDoc(parts, connections)}
           onAutoArrange={autoArrangeParts}
           parts={parts}
         />
@@ -396,6 +411,11 @@ export default function PrototypingMindMap() {
             }}
           />
         )}
+
+        <SimpleChatBar
+          designContext={{ parts, connections }}
+          onDesignGenerated={handleDesignGenerated}
+        />
       </div>
     </ReactFlowProvider>
   )

@@ -61,32 +61,35 @@ export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated 
 
     try {
       // Check if this is a design generation request
-      const isDesignRequest = messageContent.toLowerCase().includes('generate') && 
-                             (messageContent.toLowerCase().includes('design') || 
-                              messageContent.toLowerCase().includes('build') ||
-                              messageContent.toLowerCase().includes('create'))
-
-      // Check if this is a design edit request
-      const isEditRequest = !isDesignRequest && 
-                           (designContext?.parts && designContext.parts.length > 0) &&
-                           (messageContent.toLowerCase().includes('change') ||
-                            messageContent.toLowerCase().includes('replace') ||
-                            messageContent.toLowerCase().includes('modify') ||
-                            messageContent.toLowerCase().includes('update') ||
-                            messageContent.toLowerCase().includes('edit') ||
-                            messageContent.toLowerCase().includes('swap') ||
-                            messageContent.toLowerCase().includes('add') ||
-                            messageContent.toLowerCase().includes('remove') ||
-                            messageContent.toLowerCase().includes('delete') ||
-                            messageContent.toLowerCase().includes('substitute'))
+      // We want to be more flexible with keywords while respecting context
+      const lowerMsg = messageContent.toLowerCase()
+      const hasContext = designContext?.parts && designContext.parts.length > 0
+      
+      const genKeywords = ['generate', 'design', 'create', 'build', 'architect', 'scaffold', 'make', 'draw', 'diagram']
+      const resetKeywords = ['start over', 'new design', 'clear and', 'reset', 'scratch']
+      const editKeywords = ['change', 'replace', 'modify', 'update', 'edit', 'swap', 'add', 'remove', 'delete', 'substitute', 'connect', 'link', 'move']
 
       // Determine the appropriate category
       let category = 'prototypingAdvice'
-      if (isDesignRequest) {
-        category = 'designGeneration'
-      } else if (isEditRequest) {
-        category = 'designEdit'
+      
+      if (hasContext) {
+        // If we have context, we default to edit unless explicitly asked to start over
+        if (resetKeywords.some(k => lowerMsg.includes(k))) {
+          category = 'designGeneration'
+        } else if (editKeywords.some(k => lowerMsg.includes(k)) || genKeywords.some(k => lowerMsg.includes(k))) {
+          // "create a service" with context -> edit
+          category = 'designEdit'
+        }
+      } else {
+        // No context - if any generation keyword is present, it's a design request
+        if (genKeywords.some(k => lowerMsg.includes(k))) {
+          category = 'designGeneration'
+        }
       }
+
+      // For backward compatibility with the existing logic structure if needed, 
+      // but relying on the category assignment is cleaner.
+
 
       const response = await fetch('/api/ai/chat', {
         method: 'POST',

@@ -2,7 +2,7 @@
 
 import { memo } from "react"
 import { Handle, Position, type NodeProps } from "@xyflow/react"
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, HelpCircle } from "lucide-react"
 import type { Part, Component } from "@/lib/types"
 import { ALL_COMPONENTS } from "@/lib/constants"
 
@@ -22,11 +22,18 @@ export const CustomNode = memo(({ data, selected }: CustomNodeProps) => {
     if (component) return component
     const customComponent = data.customComponents?.find((c: any) => c.id === typeId)
     if (customComponent) return customComponent
-    return ALL_COMPONENTS.find((c) => c.id === "frame")!
+    
+    // Fallback to a default component structure if not found
+    return {
+      id: "unknown",
+      name: "Unknown Component",
+      icon: HelpCircle,
+      customColor: "#9CA3AF"
+    }
   }
 
   const component = getComponentByType(data.type)
-  const Icon = component.icon
+  const Icon = component.icon || HelpCircle
 
   return (
     <div className={`transition-all ${selected ? "scale-105" : ""}`}>
