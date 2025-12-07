@@ -368,34 +368,34 @@ export function SimpleChatBar({ onSendMessage, designContext, onDesignGenerated 
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => handleQuickDesignGeneration('Generate a smart home automation prototype design')}
+              onClick={() => handleQuickDesignGeneration('Generate a microservices e-commerce architecture with API gateway')}
               className="text-xs bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100"
               disabled={isLoading}
             >
               <Wand2 className="h-3 w-3 mr-1" />
-              Smart Home
+              Microservices
             </Button>
             <Button
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => handleQuickDesignGeneration('Generate an IoT sensor monitoring prototype design')}
+              onClick={() => handleQuickDesignGeneration('Generate an event-driven architecture using Kafka and consumer services')}
               className="text-xs bg-gradient-to-r from-green-50 to-teal-50 border-green-200 hover:from-green-100 hover:to-teal-100"
               disabled={isLoading}
             >
               <Lightbulb className="h-3 w-3 mr-1" />
-              IoT Sensors
+              Event Streaming
             </Button>
             <Button
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => handleQuickDesignGeneration('Generate a robotics control prototype design')}
+              onClick={() => handleQuickDesignGeneration('Generate an ETL data pipeline architecture with data lake and analytics')}
               className="text-xs bg-gradient-to-r from-orange-50 to-red-50 border-orange-200 hover:from-orange-100 hover:to-red-100"
               disabled={isLoading}
             >
               <Wand2 className="h-3 w-3 mr-1" />
-              Robotics
+              Data Pipeline
             </Button>
           </div>
           
