@@ -238,10 +238,12 @@ export function Canvas({
           fitView
           minZoom={0.3}
           maxZoom={3}
+          snapToGrid={true}
+          snapGrid={[20, 20]}
           defaultEdgeOptions={{
             type: "custom",
           }}
-          connectionLineType={ConnectionLineType.Bezier}
+          connectionLineType={ConnectionLineType.SmoothStep}
           connectionLineStyle={{
             stroke: selectedLinkType.color,
             strokeWidth: selectedLinkType.strokeWidth || 2,

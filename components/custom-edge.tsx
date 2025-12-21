@@ -1,7 +1,7 @@
 "use client"
 
 import { memo } from "react"
-import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react"
+import { BaseEdge, type EdgeProps, getSmoothStepPath } from "@xyflow/react"
 
 export const CustomEdge = memo(
   ({
@@ -17,13 +17,15 @@ export const CustomEdge = memo(
     selected,
     data,
   }: EdgeProps) => {
-    const [edgePath] = getBezierPath({
+    const [edgePath] = getSmoothStepPath({
       sourceX,
       sourceY,
       targetX,
       targetY,
       sourcePosition,
       targetPosition,
+      borderRadius: 16,
+      offset: 20,
     })
 
     return (
